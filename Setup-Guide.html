@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup Guide — Medicare Advantage Agent CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #16262F;
+    --navy-deep: #0E181D;
+    --parchment: #F4F0E6;
+    --card: #FFFFFF;
+    --brass: #B08A4E;
+    --brass-light: #D8B87E;
+    --brass-ink: #7B6036;
+    --sage: #5C7A63;
+    --sage-bg: #E7EDE5;
+    --sage-ink: #4E6754;
+    --rust: #9B4B3E;
+    --rust-bg: #F3E3DE;
+    --amber: #B98A2E;
+    --amber-bg: #F5EAD3;
+    --ink: #20302F;
+    --slate: #5B6D72;
+    --line: #E4DECF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px 100px; }
+
+  /* ---------- Sticky progress rail ---------- */
+  .progress-rail {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: var(--navy); border-bottom: 1px solid rgba(216,184,126,0.25);
+    padding: 10px 20px; transform: translateY(-100%);
+    transition: transform 0.25s ease;
+  }
+  .progress-rail.visible { transform: translateY(0); }
+  .progress-rail-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--brass-light);
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .progress-track { flex: 1; height: 4px; background: rgba(255,255,255,0.14); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--brass-light); border-radius: 2px; width: 14.28%; transition: width 0.25s ease; }
+
+  /* ---------- Header ---------- */
+  header.hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    padding: 56px 24px 64px;
+  }
+  .hero-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 28px; }
+  .compass-mark { flex-shrink: 0; }
+  .eyebrow {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.16em; color: var(--brass-light); text-transform: uppercase; margin-bottom: 10px;
+  }
+  h1.title {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 40px;
+    color: var(--parchment); line-height: 1.1;
+  }
+  .hero-sub { color: var(--sage); font-size: 15.5px; margin-top: 10px; max-width: 480px; }
+  .meta-strip {
+    display: flex; gap: 18px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .meta-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(176,138,78,0.16); color: var(--brass-light);
+    padding: 6px 13px; border-radius: 999px; font-size: 12.5px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ---------- Section labels ---------- */
+  .section-label {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass-ink);
+    margin: 56px 0 6px;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; color: var(--ink);
+    margin-bottom: 18px;
+  }
+
+  /* ---------- Checklist ---------- */
+  .checklist {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px; margin-top: 8px;
+  }
+  .check-item {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; font-size: 14px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .check-item svg { flex-shrink: 0; margin-top: 2px; }
+
+  /* ---------- Steps / route ---------- */
+  .steps { margin-top: 8px; }
+  .step { display: grid; grid-template-columns: 56px 1fr; gap: 24px; position: relative; scroll-margin-top: 60px; }
+  .rail { position: relative; display: flex; justify-content: center; }
+  .rail::after {
+    content: ''; position: absolute; top: 56px; bottom: -32px; width: 2px;
+    background: var(--line); left: 50%; transform: translateX(-50%);
+  }
+  .step:last-child .rail::after { display: none; }
+  .step-num {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--navy); color: var(--brass-light);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 18px;
+    z-index: 1; flex-shrink: 0;
+    box-shadow: 0 0 0 4px var(--parchment);
+  }
+  .step-body { padding-bottom: 44px; }
+  .step-title {
+    font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600;
+    color: var(--ink); margin-bottom: 8px;
+  }
+  .step-optional {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--slate);
+    background: var(--line); padding: 2px 8px; border-radius: 5px; margin-left: 8px; vertical-align: middle;
+  }
+  .step-text { font-size: 15px; color: var(--ink); margin-bottom: 16px; }
+  .step-text code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: var(--sage-bg);
+    color: var(--sage-ink); padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---------- Mockup: browser window ---------- */
+  .mockup {
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    box-shadow: 0 4px 14px rgba(22,38,47,0.08); background: var(--card);
+  }
+  .mockup-bar {
+    background: #EFEBE0; padding: 9px 12px; display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .dot.r { background: var(--rust); opacity: .55; }
+  .dot.a { background: var(--amber); opacity: .55; }
+  .dot.s { background: var(--sage); opacity: .55; }
+  .mockup-url {
+    background: #fff; border-radius: 6px; padding: 4px 12px; margin-left: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--slate);
+    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .mockup-body { padding: 18px; font-size: 13px; }
+  .mockup-caption {
+    font-size: 11.5px; color: var(--slate); font-style: italic; margin-top: 7px;
+  }
+
+  .btn-mock {
+    display: inline-block; background: var(--navy); color: var(--parchment);
+    padding: 7px 14px; border-radius: 6px; font-size: 12.5px; font-weight: 600;
+  }
+  .menu-mock {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    width: 180px; box-shadow: 0 6px 16px rgba(0,0,0,0.1); overflow: hidden;
+  }
+  .menu-item { padding: 8px 12px; font-size: 12.5px; color: var(--ink); border-bottom: 1px solid var(--line); }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item.hl { background: var(--sage-bg); color: var(--sage-ink); font-weight: 600; }
+
+  .secrets-row {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--line);
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  }
+  .secrets-row:last-child { border-bottom: none; }
+  .secrets-row .name { color: var(--ink); }
+  .secrets-row .val { color: var(--slate); }
+
+  .run-row {
+    display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 12.5px;
+  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  /* ---------- Terminal mockup (real, copyable commands) ---------- */
+  .terminal {
+    background: var(--navy-deep); border-radius: 10px; padding: 16px 18px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: #C9D6D2;
+    box-shadow: 0 4px 14px rgba(22,38,47,0.15);
+  }
+  .terminal .prompt { color: var(--brass-light); }
+  .terminal .pass { color: #9ED1AC; }
+  .terminal .dim { color: #6C7C7F; }
+  .terminal .line { margin-bottom: 3px; white-space: pre-wrap; word-break: break-word; }
+  .terminal .line.cmd {
+    display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+    padding: 3px 6px; margin: 1px -6px 5px; border-radius: 6px; cursor: pointer;
+  }
+  .terminal .line.cmd:hover, .terminal .line.cmd:focus-within { background: rgba(255,255,255,0.05); }
+  .terminal .cmd-text { flex: 1; min-width: 0; }
+  .copy-btn {
+    flex-shrink: 0; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    color: var(--brass-light); background: rgba(216,184,126,0.14);
+    border: 1px solid rgba(216,184,126,0.4); border-radius: 6px;
+    padding: 6px 11px; min-height: 30px; cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .copy-btn:hover { background: rgba(216,184,126,0.24); }
+  .copy-btn:focus-visible { outline: 2px solid var(--brass-light); outline-offset: 2px; }
+  .copy-btn.copied { color: #9ED1AC; border-color: rgba(158,209,172,0.5); background: rgba(158,209,172,0.14); }
+
+  /* ---------- Callouts ---------- */
+  .callout {
+    border-left: 3px solid var(--brass); background: var(--amber-bg);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; font-size: 13.5px; margin-top: 14px;
+  }
+  .callout.warn { border-left-color: var(--rust); background: var(--rust-bg); }
+  .callout.calm { border-left-color: var(--sage); background: var(--sage-bg); }
+  .callout b { color: var(--ink); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--slate); font-family: 'IBM Plex Mono', monospace;
+    text-align: center;
+  }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--brass-ink); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .progress-rail, .progress-fill, .copy-btn { transition: none; }
+  }
+
+  @media (max-width: 560px) {
+    h1.title { font-size: 30px; }
+    .hero-inner { flex-direction: column; align-items: flex-start; }
+    .step { grid-template-columns: 40px 1fr; gap: 14px; }
+    .step-num { width: 36px; height: 36px; font-size: 15px; }
+    .mockup-url { font-size: 10.5px; padding: 4px 9px; }
+    .mockup-body { font-size: 12px; }
+    .terminal { font-size: 11.5px; padding: 14px 14px; }
+    .terminal .line.cmd { flex-wrap: wrap; }
+    .copy-btn { font-size: 10.5px; padding: 6px 10px; }
+    .progress-label { font-size: 10px; }
+    .progress-rail { padding: 9px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-rail" id="progressRail" aria-hidden="true">
+  <div class="progress-rail-inner">
+    <span class="progress-label">Step <span id="progressStep">1</span> of 7</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <svg class="compass-mark" width="72" height="72" viewBox="0 0 72 72" fill="none">
+      <circle cx="36" cy="36" r="30" stroke="#B08A4E" stroke-width="1.4" opacity="0.9"/>
+      <circle cx="36" cy="36" r="21" stroke="#B08A4E" stroke-width="0.8" opacity="0.4"/>
+      <g stroke="#B08A4E" stroke-linecap="round">
+        <line x1="36" y1="8" x2="36" y2="14" stroke-width="2"/>
+        <line x1="36" y1="58" x2="36" y2="64" stroke-width="2"/>
+        <line x1="8" y1="36" x2="14" y2="36" stroke-width="2"/>
+        <line x1="58" y1="36" x2="64" y2="36" stroke-width="2"/>
+      </g>
+      <path d="M36 20 L40 36 L36 52 L32 36 Z" fill="#D8B87E" opacity="0.9"/>
+      <circle cx="36" cy="36" r="3" fill="#F4F0E6"/>
+    </svg>
+    <div>
+      <div class="eyebrow">Field-Ready Setup</div>
+      <h1 class="title">Setup Guide</h1>
+      <p class="hero-sub">Seven steps to get the compliance automations running on your own free accounts. No hosting, no subscriptions.</p>
+      <div class="meta-strip">
+        <span class="meta-pill">⏱ ~20 minutes</span>
+        <span class="meta-pill">💵 $0 to run</span>
+        <span class="meta-pill">↻ do once</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="section-label">Before you start</div>
+  <div class="section-title">What you'll need</div>
+  <div class="checklist">
+    <div class="check-item">
+      <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#5C7A63" stroke-width="1.4" fill="none"/><path d="M5 8l2 2 4-4" stroke="#5C7A63" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      A Notion account with your duplicated CRM template
+    </div>
+    <div class="check-item">
+      <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#5C7A63" stroke-width="1.4" fill="none"/><path d="M5 8l2 2 4-4" stroke="#5C7A63" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      A free GitHub account
+    </div>
+    <div class="check-item">
+      <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#5C7A63" stroke-width="1.4" fill="none"/><path d="M5 8l2 2 4-4" stroke="#5C7A63" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      A free Vercel account <span style="color:var(--slate)">(only for step 6)</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>This is a workflow aid, not legal advice.</b> The SOA rule logic especially should get re-checked against current CMS guidance before you rely on it day to day.
+  </div>
+
+  <div class="callout calm">
+    <b>New to this kind of setup?</b> You don't need a coding background. Every command below has a <b>Copy</b> button, and each step says exactly what to click and where. Nothing here is permanent — the integration, the secrets, and the Vercel project can all be disconnected in a click if you back out.
+  </div>
+
+  <div class="section-label">Walkthrough</div>
+  <div class="section-title">Seven steps</div>
+
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">1</div></div>
+      <div class="step-body">
+        <div class="step-title">Duplicate the Notion template</div>
+        <div class="step-text">If you haven't already, open the template and click <b>Duplicate</b> in the top right. Everything from here on refers to <i>your</i> copy — your IDs will be different from anything in this guide.</div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">2</div></div>
+      <div class="step-body">
+        <div class="step-title">Create a Notion integration</div>
+        <div class="step-text">Go to <code>notion.so/my-integrations</code> → New integration. Name it anything. Copy the secret it gives you — that's your <code>NOTION_API_KEY</code>.</div>
+
+        <div class="mockup">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">notion.so/my-integrations</div></div>
+          <div class="mockup-body">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-weight:600; color:var(--ink);">My integrations</span>
+              <span class="btn-mock">+ New integration</span>
+            </div>
+            <div style="background:var(--parchment); border-radius:6px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--slate);">
+              secret_•••••••••••••••••••••••••••• &nbsp; <span style="color:var(--sage-ink);">[copy]</span>
+            </div>
+          </div>
+        </div>
+        <p class="mockup-caption">Illustrative — Notion's actual page may look slightly different.</p>
+
+        <div class="step-text" style="margin-top:16px;">Then, for <b>each of the 7 databases</b> (Clients, Leads, SOA Records, Appointments, Policies, Carrier Reference, Tasks), open it and connect your integration:</div>
+
+        <div class="mockup" style="max-width:260px;">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">•••</div></div>
+          <div class="mockup-body">
+            <div class="menu-mock">
+              <div class="menu-item">Duplicate</div>
+              <div class="menu-item hl">Connect to ›</div>
+              <div class="menu-item">Export</div>
+              <div class="menu-item">Delete</div>
+            </div>
+          </div>
+        </div>
+        <p class="mockup-caption">Repeat this for all 7 databases — Notion doesn't inherit the connection from the parent page.</p>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">3</div></div>
+      <div class="step-body">
+        <div class="step-title">Find your data source IDs</div>
+        <div class="step-text">Open a terminal in the unzipped folder and run — tap any line below to copy it:</div>
+        <div class="terminal">
+          <div class="line cmd" data-copy="npm install"><span class="cmd-text"><span class="prompt">$</span> npm install</span><button type="button" class="copy-btn" aria-label="Copy: npm install">Copy</button></div>
+          <div class="line cmd" data-copy="npm run find-ids -- "><span class="cmd-text"><span class="prompt">$</span> npm run find-ids -- &lt;link to your Home page&gt;</span><button type="button" class="copy-btn" aria-label="Copy command, then paste your Home page link right after it">Copy</button></div>
+          <div class="line dim">&nbsp;</div>
+          <div class="line dim">Paste this into your .env:</div>
+          <div class="line pass">CLIENTS_DATA_SOURCE_ID=1aa33263-ad2f...</div>
+          <div class="line pass">LEADS_DATA_SOURCE_ID=e3c3dcbe-76d3...</div>
+          <div class="line dim">...</div>
+        </div>
+        <div class="step-text" style="margin-top:14px;">This exists because hunting these down by hand through the raw API is genuinely annoying. Don't do that.</div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">4</div></div>
+      <div class="step-body">
+        <div class="step-title">Set your secrets</div>
+        <div class="step-text">Copy <code>.env.example</code> to <code>.env</code> for local testing, or add each name straight to GitHub: repo → <b>Settings → Secrets and variables → Actions</b>.</div>
+
+        <div class="mockup">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/medicare-crm-automations/settings/secrets/actions</div></div>
+          <div class="mockup-body">
+            <div class="secrets-row"><span class="name">NOTION_API_KEY</span><span class="val">Updated 2m ago</span></div>
+            <div class="secrets-row"><span class="name">CLIENTS_DATA_SOURCE_ID</span><span class="val">Updated 2m ago</span></div>
+            <div class="secrets-row"><span class="name">APPOINTMENTS_DATA_SOURCE_ID</span><span class="val">Updated 2m ago</span></div>
+            <div class="secrets-row"><span class="name">···</span><span class="val"></span></div>
+          </div>
+        </div>
+        <p class="mockup-caption">Email/SMS variables are optional — leave them blank and the scripts just log to console instead.</p>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">5</div></div>
+      <div class="step-body">
+        <div class="step-title">Turn on the daily checks</div>
+        <div class="step-text">The included workflow runs automatically once secrets are set (8am ET by default). Trigger it by hand first to confirm it works before trusting it unattended:</div>
+
+        <div class="mockup">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/medicare-crm-automations/actions</div></div>
+          <div class="mockup-body">
+            <div style="font-weight:600; margin-bottom:8px;">Daily Compliance & Deadline Checks</div>
+            <div class="run-row"><div class="status-dot"></div> Run #14 · completed · 38s ago</div>
+            <div class="run-row"><div class="status-dot" style="background:var(--line)"></div> Run #13 · completed · 1d ago</div>
+            <span class="btn-mock" style="margin-top:6px; display:inline-block;">Run workflow ▾</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">6</div></div>
+      <div class="step-body">
+        <div class="step-title">Deploy the lead webhook <span class="step-optional">optional</span></div>
+        <div class="step-text">Only needed if you want form submissions to auto-create leads. Push this repo to your own GitHub, then:</div>
+
+        <div class="mockup">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">vercel.com/new</div></div>
+          <div class="mockup-body">
+            <div style="font-weight:600; margin-bottom:8px;">Import Git Repository</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--parchment); border-radius:6px; padding:9px 12px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px;">you/medicare-crm-automations</span>
+              <span class="btn-mock">Import</span>
+            </div>
+          </div>
+        </div>
+        <div class="step-text" style="margin-top:14px;">Add the same Notion variables plus <code>WEBHOOK_SECRET</code> under Vercel's Environment Variables. Point Tally, Typeform, or a plain form at <code>https://your-project.vercel.app/api/lead-webhook</code>.</div>
+      </div>
+    </div>
+
+    <!-- STEP 7 -->
+    <div class="step">
+      <div class="rail"><div class="step-num">7</div></div>
+      <div class="step-body">
+        <div class="step-title">Test it</div>
+        <div class="terminal">
+          <div class="line cmd" data-copy="npm test"><span class="cmd-text"><span class="prompt">$</span> npm test</span><button type="button" class="copy-btn" aria-label="Copy: npm test">Copy</button></div>
+          <div class="line pass">24 passed, 0 failed</div>
+          <div class="line pass">7 passed, 0 failed</div>
+          <div class="line dim">&nbsp;</div>
+          <div class="line cmd" data-copy="npm run soa-check"><span class="cmd-text"><span class="prompt">$</span> npm run soa-check</span><button type="button" class="copy-btn" aria-label="Copy: npm run soa-check">Copy</button></div>
+          <div class="line dim">Checking 5 appointment(s)...</div>
+          <div class="line pass">Done. 3 appointment(s) flagged.</div>
+        </div>
+        <div class="step-text" style="margin-top:14px;">The second command runs a real check against your actual Notion data — the fastest way to know everything's wired up right.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout warn">
+    <b>Stuck on a step?</b> Re-read <code>INSTRUCTIONS.md</code> in the same folder — it covers the same ground in plain text, which is easier to search and copy commands from.
+  </div>
+
+  <footer>
+    Field Ledger — Medicare Advantage Agent CRM &nbsp;·&nbsp; Licensed for single-user use, see LICENSE.md
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.left = '-1000px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+
+  function showCopied(row) {
+    var btn = row.querySelector('.copy-btn');
+    if (!btn) return;
+    var original = btn.getAttribute('data-label') || btn.textContent;
+    btn.setAttribute('data-label', original);
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    clearTimeout(btn._resetTimer);
+    btn._resetTimer = setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1500);
+  }
+
+  document.querySelectorAll('.terminal').forEach(function (term) {
+    term.addEventListener('click', function (e) {
+      var row = e.target.closest('.line.cmd');
+      if (!row || !term.contains(row)) return;
+      var text = row.getAttribute('data-copy');
+      if (!text) return;
+      copyText(text);
+      showCopied(row);
+    });
+  });
+
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var rail = document.getElementById('progressRail');
+  var stepLabel = document.getElementById('progressStep');
+  var fill = document.getElementById('progressFill');
+
+  if (steps.length && rail && 'IntersectionObserver' in window) {
+    var total = steps.length;
+    var visible = new Set();
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var idx = steps.indexOf(entry.target) + 1;
+        if (entry.isIntersecting) { visible.add(idx); } else { visible.delete(idx); }
+      });
+      if (visible.size) {
+        var current = Math.min.apply(null, Array.from(visible));
+        rail.classList.add('visible');
+        stepLabel.textContent = current;
+        fill.style.width = (current / total * 100) + '%';
+      } else {
+        rail.classList.remove('visible');
+      }
+    }, { rootMargin: '-15% 0px -60% 0px', threshold: 0 });
+
+    steps.forEach(function (s) { observer.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>

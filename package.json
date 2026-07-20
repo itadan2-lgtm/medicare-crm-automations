@@ -1,0 +1,22 @@
+{
+  "name": "medicare-crm-automations",
+  "version": "1.0.0",
+  "description": "Compliance and deadline automation scripts for the Medicare Advantage Agent Notion CRM.",
+  "main": "index.js",
+  "scripts": {
+    "find-ids": "node setup/find-data-source-ids.js",
+    "daily-digest": "node automations/daily-digest.js",
+    "soa-check": "node automations/soa-compliance.js",
+    "enrollment-deadlines": "node automations/enrollment-deadlines.js",
+    "chargeback-check": "node automations/chargeback-tracker.js",
+    "t65-tag": "node automations/t65-tagger.js",
+    "test": "node automations/tests/run-tests.js && node automations/tests/integration-mock.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@notionhq/client": "^5.23.2",
+    "@sendgrid/mail": "^8.1.6",
+    "dotenv": "^17.2.3",
+    "twilio": "^5.10.5"
+  }
+}

@@ -1,0 +1,32 @@
+name: Daily Compliance & Deadline Checks
+
+on:
+  schedule:
+    - cron: '0 13 * * *' # 8am ET daily (adjust for your timezone / DST as needed)
+  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - name: Run all checks and send one daily digest
+        run: node automations/daily-digest.js
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          CLIENTS_DATA_SOURCE_ID: ${{ secrets.CLIENTS_DATA_SOURCE_ID }}
+          APPOINTMENTS_DATA_SOURCE_ID: ${{ secrets.APPOINTMENTS_DATA_SOURCE_ID }}
+          SOA_RECORDS_DATA_SOURCE_ID: ${{ secrets.SOA_RECORDS_DATA_SOURCE_ID }}
+          POLICIES_DATA_SOURCE_ID: ${{ secrets.POLICIES_DATA_SOURCE_ID }}
+          CARRIER_REFERENCE_DATA_SOURCE_ID: ${{ secrets.CARRIER_REFERENCE_DATA_SOURCE_ID }}
+          TASKS_DATA_SOURCE_ID: ${{ secrets.TASKS_DATA_SOURCE_ID }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+          ALERT_SMS_TO: ${{ secrets.ALERT_SMS_TO }}
