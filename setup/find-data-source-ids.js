@@ -7,23 +7,7 @@
 //   NOTION_API_KEY=secret_xxx node scripts/find-data-source-ids.js <home-page-url-or-id>
 
 const { Client } = require("@notionhq/client");
-
-const EXPECTED = {
-  "Clients": "CLIENTS_DATA_SOURCE_ID",
-  "Leads (Intake)": "LEADS_DATA_SOURCE_ID",
-  "SOA Records": "SOA_RECORDS_DATA_SOURCE_ID",
-  "Appointments": "APPOINTMENTS_DATA_SOURCE_ID",
-  "Policies / Commissions": "POLICIES_DATA_SOURCE_ID",
-  "Carrier Reference (Chargeback Windows)": "CARRIER_REFERENCE_DATA_SOURCE_ID",
-  "Tasks / Follow-ups": "TASKS_DATA_SOURCE_ID",
-};
-
-function extractPageId(input) {
-  const match = input.replace(/-/g, "").match(/([0-9a-f]{32})/i);
-  if (!match) throw new Error(`Couldn't find a page id in "${input}". Paste the full Notion URL or just the id.`);
-  const raw = match[1];
-  return `${raw.slice(0, 8)}-${raw.slice(8, 12)}-${raw.slice(12, 16)}-${raw.slice(16, 20)}-${raw.slice(20)}`;
-}
+const { DATABASES: EXPECTED, extractPageId, findDataSources } = require("./shared");
 
 async function main() {
   const input = process.argv[2];
@@ -38,21 +22,16 @@ async function main() {
 
   const notion = new Client({ auth: process.env.NOTION_API_KEY });
   const pageId = extractPageId(input);
-
-  const children = await notion.blocks.children.list({ block_id: pageId, page_size: 100 });
-  const databaseBlocks = children.results.filter((b) => b.type === "child_database");
-
-  if (databaseBlocks.length === 0) {
-    console.error("No databases found on that page. Did you connect your integration to it (••• menu > Connect to)?");
+  if (!pageId) {
+    console.error(`Couldn't find a page id in "${input}". Paste the full Notion URL or just the id.`);
     process.exit(1);
   }
 
-  const found = {};
-  for (const block of databaseBlocks) {
-    const title = block.child_database.title;
-    const db = await notion.databases.retrieve({ database_id: block.id });
-    const dataSourceId = db.data_sources?.[0]?.id;
-    found[title] = dataSourceId;
+  const found = await findDataSources(notion, pageId);
+
+  if (Object.keys(found).length === 0) {
+    console.error("No databases found on that page. Did you connect your integration to it (••• menu > Connect to)?");
+    process.exit(1);
   }
 
   console.log("\nPaste this into your .env (or add as GitHub/Vercel secrets):\n");

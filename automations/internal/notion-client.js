@@ -13,11 +13,15 @@ const notion = new Client({ auth: process.env.NOTION_API_KEY });
 // Queries a full data source, paging through results automatically.
 async function queryAll(dataSourceId, { filter, sorts } = {}) {
   if (!process.env.NOTION_API_KEY || !dataSourceId) {
-    throw new Error(
-      "Setup isn't finished - a Notion key or database ID is missing. " +
-        "Run `npm run setup` to fill it in, or `npm run doctor` to see " +
-        "exactly what's missing."
-    );
+    // point at the right fix for where this is running - a browser-only
+    // user reading an Actions log has never seen a terminal
+    const fix = process.env.GITHUB_ACTIONS
+      ? "In this repo: add the NOTION_API_KEY secret (Settings -> Secrets " +
+        "and variables -> Actions), then run the One-time setup workflow " +
+        "from the Actions tab."
+      : "Run `npm run setup` to fill it in, or `npm run doctor` to see " +
+        "exactly what's missing.";
+    throw new Error("Setup isn't finished - a Notion key or database ID is missing. " + fix);
   }
   const results = [];
   let cursor = undefined;

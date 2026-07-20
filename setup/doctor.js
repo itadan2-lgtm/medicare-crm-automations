@@ -7,15 +7,7 @@ const path = require("path");
 
 const ENV_PATH = path.join(__dirname, "..", ".env");
 
-const DATABASES = {
-  Clients: "CLIENTS_DATA_SOURCE_ID",
-  "Leads (Intake)": "LEADS_DATA_SOURCE_ID",
-  "SOA Records": "SOA_RECORDS_DATA_SOURCE_ID",
-  Appointments: "APPOINTMENTS_DATA_SOURCE_ID",
-  "Policies / Commissions": "POLICIES_DATA_SOURCE_ID",
-  "Carrier Reference (Chargeback Windows)": "CARRIER_REFERENCE_DATA_SOURCE_ID",
-  "Tasks / Follow-ups": "TASKS_DATA_SOURCE_ID",
-};
+const { DATABASES } = require("./shared");
 
 const ok = (msg) => console.log(`  ✔ ${msg}`);
 const bad = (msg) => console.log(`  ✖ ${msg}`);
@@ -25,21 +17,27 @@ async function main() {
   console.log("\nChecking your setup...\n");
   let problems = 0;
 
-  // 1. Settings file
-  if (!fs.existsSync(ENV_PATH)) {
-    bad("No settings found yet.");
-    note("Run `npm run setup` - it asks a few questions and creates them.");
-    console.log("");
-    process.exitCode = 1;
-    return;
+  // 1. Settings - .env if present, plus whatever One-time setup saved
+  if (fs.existsSync(ENV_PATH)) {
+    ok("Settings file exists.");
+    require("dotenv").config({ path: ENV_PATH });
   }
-  ok("Settings file exists.");
-  require("dotenv").config({ path: ENV_PATH });
+  let saved = {};
+  try {
+    saved = require("../automations/internal/data-sources.json");
+  } catch {}
 
   // 2. Notion key
   if (!process.env.NOTION_API_KEY) {
-    bad("No Notion key saved.");
-    note("Run `npm run setup` and paste your key when asked.");
+    if (Object.keys(saved).length > 0) {
+      bad("This computer doesn't have your Notion key yet.");
+      note("Your databases are already set up (the One-time setup workflow");
+      note("saved them), so the GitHub runs are fine. To run checks from");
+      note("this computer too, run `npm run setup` and paste your key.");
+    } else {
+      bad("No settings found yet.");
+      note("Run `npm run setup` - it asks a few questions and creates them.");
+    }
     console.log("");
     process.exitCode = 1;
     return;
@@ -65,10 +63,6 @@ async function main() {
   }
 
   // 3. Each database (env first, then whatever One-time setup saved)
-  let saved = {};
-  try {
-    saved = require("../automations/internal/data-sources.json");
-  } catch {}
   for (const [title, envVar] of Object.entries(DATABASES)) {
     const id = process.env[envVar] || saved[envVar];
     if (!id) {

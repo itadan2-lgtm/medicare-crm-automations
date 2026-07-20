@@ -15,15 +15,7 @@ const readline = require("readline/promises");
 
 const ENV_PATH = path.join(__dirname, "..", ".env");
 
-const DATABASES = {
-  "Clients": "CLIENTS_DATA_SOURCE_ID",
-  "Leads (Intake)": "LEADS_DATA_SOURCE_ID",
-  "SOA Records": "SOA_RECORDS_DATA_SOURCE_ID",
-  "Appointments": "APPOINTMENTS_DATA_SOURCE_ID",
-  "Policies / Commissions": "POLICIES_DATA_SOURCE_ID",
-  "Carrier Reference (Chargeback Windows)": "CARRIER_REFERENCE_DATA_SOURCE_ID",
-  "Tasks / Follow-ups": "TASKS_DATA_SOURCE_ID",
-};
+const { DATABASES, extractPageId, findDataSources } = require("./shared");
 
 // ---------- little helpers ----------
 
@@ -54,13 +46,6 @@ function readExistingEnv() {
     if (match) values[match[1]] = match[2].trim();
   }
   return values;
-}
-
-function extractPageId(input) {
-  const match = input.replace(/-/g, "").match(/([0-9a-f]{32})/i);
-  if (!match) return null;
-  const raw = match[1];
-  return `${raw.slice(0, 8)}-${raw.slice(8, 12)}-${raw.slice(12, 16)}-${raw.slice(16, 20)}-${raw.slice(20)}`;
 }
 
 // ---------- the steps ----------
@@ -122,22 +107,15 @@ async function stepFindIds(notionKey, existing) {
       continue;
     }
 
-    let blocks;
+    let found;
     try {
-      blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 100 });
+      found = await findDataSources(notion, pageId);
     } catch (err) {
       say("\nNotion wouldn't show me that page. Almost always this means the");
       say("integration isn't connected yet: on the Home page, click the •••");
       say('menu -> "Connect to" -> pick your integration. Then paste the');
       say("link again.\n");
       continue;
-    }
-
-    const found = {};
-    for (const block of blocks.results.filter((b) => b.type === "child_database")) {
-      const db = await notion.databases.retrieve({ database_id: block.id });
-      const dataSourceId = db.data_sources?.[0]?.id;
-      if (dataSourceId) found[block.child_database.title] = dataSourceId;
     }
 
     const ids = {};
@@ -189,6 +167,10 @@ async function stepEmail(existing) {
     values.ALERT_EMAIL_FROM = await ask("What address should they come FROM? (must be verified in SendGrid)", { fallback: existing.ALERT_EMAIL_FROM });
     say("");
   } else {
+    // an explicit "no" turns email off, even if it was on before
+    values.SENDGRID_API_KEY = "";
+    values.ALERT_EMAIL_TO = "";
+    values.ALERT_EMAIL_FROM = "";
     say("");
   }
 
@@ -201,6 +183,11 @@ async function stepEmail(existing) {
     values.ALERT_SMS_TO = await ask("What number should texts go TO?", { fallback: existing.ALERT_SMS_TO });
     say("");
   } else {
+    // same for texts - "no" means off
+    values.TWILIO_ACCOUNT_SID = "";
+    values.TWILIO_AUTH_TOKEN = "";
+    values.TWILIO_FROM_NUMBER = "";
+    values.ALERT_SMS_TO = "";
     say("");
   }
 
@@ -238,6 +225,17 @@ function writeEnv(values) {
 // ---------- main ----------
 
 async function main() {
+  try {
+    require.resolve("@notionhq/client");
+  } catch {
+    say("");
+    say("One step first: run `npm install` (it downloads the pieces this");
+    say("needs, takes about a minute), then run `npm run setup` again.");
+    say("");
+    process.exitCode = 1;
+    return;
+  }
+
   say("");
   say("=====================================================");
   say("  Medicare CRM automations - guided setup");
@@ -265,14 +263,6 @@ async function main() {
     NOTION_API_KEY: notionKey,
     ...ids,
     ...alerts,
-    // carry forward anything skipped this run
-    SENDGRID_API_KEY: alerts.SENDGRID_API_KEY ?? existing.SENDGRID_API_KEY,
-    ALERT_EMAIL_TO: alerts.ALERT_EMAIL_TO ?? existing.ALERT_EMAIL_TO,
-    ALERT_EMAIL_FROM: alerts.ALERT_EMAIL_FROM ?? existing.ALERT_EMAIL_FROM,
-    TWILIO_ACCOUNT_SID: alerts.TWILIO_ACCOUNT_SID ?? existing.TWILIO_ACCOUNT_SID,
-    TWILIO_AUTH_TOKEN: alerts.TWILIO_AUTH_TOKEN ?? existing.TWILIO_AUTH_TOKEN,
-    TWILIO_FROM_NUMBER: alerts.TWILIO_FROM_NUMBER ?? existing.TWILIO_FROM_NUMBER,
-    ALERT_SMS_TO: alerts.ALERT_SMS_TO ?? existing.ALERT_SMS_TO,
     WEBHOOK_SECRET: existing.WEBHOOK_SECRET || crypto.randomBytes(24).toString("hex"),
   };
 
@@ -303,7 +293,8 @@ main()
   .catch((err) => {
     say("");
     say(`Something went wrong: ${err.message}`);
-    say("Run `npm run setup` to try again - your progress so far is saved.");
+    say("Nothing was changed. Run `npm run setup` to start again - if a");
+    say("previous run finished, those answers will be offered as defaults.");
     process.exitCode = 1;
   })
   .finally(() => rl.close());

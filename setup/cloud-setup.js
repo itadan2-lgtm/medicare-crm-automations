@@ -13,15 +13,7 @@ const path = require("path");
 
 const OUT_PATH = path.join(__dirname, "..", "automations", "internal", "data-sources.json");
 
-const DATABASES = {
-  "Clients": "CLIENTS_DATA_SOURCE_ID",
-  "Leads (Intake)": "LEADS_DATA_SOURCE_ID",
-  "SOA Records": "SOA_RECORDS_DATA_SOURCE_ID",
-  "Appointments": "APPOINTMENTS_DATA_SOURCE_ID",
-  "Policies / Commissions": "POLICIES_DATA_SOURCE_ID",
-  "Carrier Reference (Chargeback Windows)": "CARRIER_REFERENCE_DATA_SOURCE_ID",
-  "Tasks / Follow-ups": "TASKS_DATA_SOURCE_ID",
-};
+const { DATABASES, extractPageId, findDataSources } = require("./shared");
 
 // Goes to the pretty summary panel on the run page (and the log).
 const summaryLines = [];
@@ -33,13 +25,6 @@ function flushSummary() {
   if (process.env.GITHUB_STEP_SUMMARY) {
     fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryLines.join("\n\n") + "\n");
   }
-}
-
-function extractPageId(input) {
-  const match = input.replace(/-/g, "").match(/([0-9a-f]{32})/i);
-  if (!match) return null;
-  const raw = match[1];
-  return `${raw.slice(0, 8)}-${raw.slice(8, 12)}-${raw.slice(12, 16)}-${raw.slice(16, 20)}-${raw.slice(20)}`;
 }
 
 async function main() {
@@ -94,9 +79,9 @@ async function main() {
     return;
   }
 
-  let blocks;
+  let found;
   try {
-    blocks = await notion.blocks.children.list({ block_id: pageId, page_size: 100 });
+    found = await findDataSources(notion, pageId);
   } catch (err) {
     report("### ❌ Notion wouldn't show me that page");
     report(
@@ -106,13 +91,6 @@ async function main() {
     );
     process.exitCode = 1;
     return;
-  }
-
-  const found = {};
-  for (const block of blocks.results.filter((b) => b.type === "child_database")) {
-    const db = await notion.databases.retrieve({ database_id: block.id });
-    const dataSourceId = db.data_sources?.[0]?.id;
-    if (dataSourceId) found[block.child_database.title] = dataSourceId;
   }
 
   const saved = fs.existsSync(OUT_PATH) ? JSON.parse(fs.readFileSync(OUT_PATH, "utf8")) : {};

@@ -25,6 +25,21 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+      - name: Check the branch dropdown was left on the default
+        if: github.ref_name != github.event.repository.default_branch
+        env:
+          PICKED: ${{ github.ref_name }}
+          WANTED: ${{ github.event.repository.default_branch }}
+        run: |
+          {
+            echo "### ⚠️ Wrong branch selected"
+            echo ""
+            echo "When you clicked **Run workflow**, the branch dropdown was set to \`$PICKED\`."
+            echo "The daily checks only read settings from \`$WANTED\`, so setup has to run there too."
+            echo ""
+            echo "Run this workflow again and leave the branch dropdown on **$WANTED** (it's the preselected option)."
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
