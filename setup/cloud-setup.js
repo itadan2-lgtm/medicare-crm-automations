@@ -13,7 +13,7 @@ const path = require("path");
 
 const OUT_PATH = path.join(__dirname, "..", "automations", "internal", "data-sources.json");
 
-const { DATABASES, extractPageId, findDataSources } = require("./shared");
+const { DATABASES, extractPageId, findDataSources, searchDataSources } = require("./shared");
 
 // Goes to the pretty summary panel on the run page (and the log).
 const summaryLines = [];
@@ -68,29 +68,37 @@ async function main() {
     return;
   }
 
-  const pageId = link ? extractPageId(link) : null;
-  if (!pageId) {
-    report("### ❌ That link didn't look like a Notion page");
-    report(
-      "In Notion, open your CRM's **Home** page, click **Share** (top right) → **Copy link**, " +
-        "and paste the whole link into the box when you run this workflow."
-    );
-    process.exitCode = 1;
-    return;
-  }
-
   let found;
-  try {
-    found = await findDataSources(notion, pageId);
-  } catch (err) {
-    report("### ❌ Notion wouldn't show me that page");
-    report(
-      "Almost always this means the page isn't connected to your integration yet. " +
-        "On the Home page in Notion, click the **•••** menu (top right) → **Connect to** → " +
-        "pick your integration. Then run this workflow again with the same link."
-    );
-    process.exitCode = 1;
-    return;
+  let duplicates = [];
+
+  if (link) {
+    // A link was pasted - walk that page directly.
+    const pageId = extractPageId(link);
+    if (!pageId) {
+      report("### ❌ That link didn't look like a Notion page");
+      report(
+        "In Notion, open your CRM's **Home** page, click **Share** (top right) → **Copy link**, " +
+          "and paste the whole link into the box when you run this workflow. Or leave the box " +
+          "empty - the setup can usually find your databases on its own."
+      );
+      process.exitCode = 1;
+      return;
+    }
+    try {
+      found = await findDataSources(notion, pageId);
+    } catch (err) {
+      report("### ❌ Notion wouldn't show me that page");
+      report(
+        "Almost always this means the page isn't connected to your integration yet. " +
+          "On the Home page in Notion, click the **•••** menu (top right) → **Connect to** → " +
+          "pick your integration. Then run this workflow again."
+      );
+      process.exitCode = 1;
+      return;
+    }
+  } else {
+    // No link - ask Notion what the integration can see and match by name.
+    ({ found, duplicates } = await searchDataSources(notion));
   }
 
   const saved = fs.existsSync(OUT_PATH) ? JSON.parse(fs.readFileSync(OUT_PATH, "utf8")) : {};
@@ -116,15 +124,36 @@ async function main() {
         "`TWILIO_FROM_NUMBER`, `ALERT_SMS_TO` for texts. Without them, results just stay " +
         "in each run's log."
     );
+  } else if (missing.length === 7 && !link) {
+    report("### ⚠️ Couldn't see any of your databases yet");
+    report(
+      "Two easy explanations:\n" +
+        "1. **The integration isn't connected yet.** In Notion, open your CRM's **Home** page, " +
+        "click the **•••** menu (top right) → **Connect to** → pick your integration.\n" +
+        "2. **You connected it seconds ago.** Notion can take a minute to catch up - just run " +
+        "this workflow again shortly.\n\n" +
+        "Still stuck? Run the workflow again and paste the link to your Home page " +
+        "(Share → Copy link in Notion) into the box - that looks the page up directly."
+    );
+    process.exitCode = 1;
   } else {
     report(`### ⚠️ Found ${7 - missing.length} of 7 databases - almost there`);
     report("Still missing:\n" + missing.map((t) => `- ${t}`).join("\n"));
-    report(
-      "Connecting the Home page usually covers everything inside it, but these didn't pick " +
-        "it up. In Notion, open each missing database, click its **•••** menu → " +
-        "**Connect to** → your integration. Then run this workflow again - " +
-        "what was already found is saved."
-    );
+    if (duplicates.length > 0) {
+      report(
+        "Some of these exist **more than once** in what's shared with the integration " +
+          `(${duplicates.map((t) => `“${t}”`).join(", ")}) - maybe a second copy of the ` +
+          "template. Run this workflow again and paste the link to the Home page of the copy " +
+          "you actually use (Share → Copy link) - that picks the right ones."
+      );
+    } else {
+      report(
+        "Connecting the Home page usually covers everything inside it, but these didn't pick " +
+          "it up. In Notion, open each missing database, click its **•••** menu → " +
+          "**Connect to** → your integration. Then run this workflow again - " +
+          "what was already found is saved."
+      );
+    }
     process.exitCode = 1;
   }
 }

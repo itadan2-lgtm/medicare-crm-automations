@@ -63,10 +63,10 @@ Everything happens on github.com; a phone browser works fine:
 2. Add your Notion secret to GitHub, once: repo -> Settings -> Secrets
    and variables -> Actions -> New repository secret. Name it
    `NOTION_API_KEY`, paste the secret from step 2 as the value.
-3. Actions tab -> **One-time setup** -> Run workflow -> paste the link
-   to your CRM's Home page (in Notion: Share -> Copy link) -> Run.
-   Leave the branch dropdown alone - the preselected one is correct,
-   and the run will stop and tell you if it's ever set wrong.
+3. Actions tab -> **One-time setup** -> Run workflow -> green Run
+   button. That's it - it finds your databases through the connection
+   you made in step 2. Leave the branch dropdown and the optional link
+   box alone (the run's summary will say so if it ever needs the link).
 4. Open the run when it finishes. Its Summary page says, in plain
    English, whether everything connected - and if not, exactly what to
    fix and that you can just run it again.

@@ -15,7 +15,7 @@ const readline = require("readline/promises");
 
 const ENV_PATH = path.join(__dirname, "..", ".env");
 
-const { DATABASES, extractPageId, findDataSources } = require("./shared");
+const { DATABASES, extractPageId, findDataSources, searchDataSources } = require("./shared");
 
 // ---------- little helpers ----------
 
@@ -90,12 +90,33 @@ async function stepFindIds(notionKey, existing) {
   const { Client } = require("@notionhq/client");
   const notion = new Client({ auth: notionKey });
 
-  say("STEP 2 OF 4 — Point me at your CRM");
+  say("STEP 2 OF 4 — Finding your databases");
   say("");
+
+  // Usually no questions needed: ask Notion what the integration can
+  // see. Only fall back to asking for a link when that's not enough.
+  try {
+    const { found, duplicates } = await searchDataSources(notion);
+    if (duplicates.length === 0) {
+      const ids = {};
+      for (const [title, envVar] of Object.entries(DATABASES)) {
+        if (found[title]) ids[envVar] = found[title];
+      }
+      if (Object.keys(ids).length === 7) {
+        say("✔ Found all 7 databases on my own - nothing to paste.\n");
+        return ids;
+      }
+    }
+  } catch {
+    // search hiccup - the link flow below works without it
+  }
+
+  say("I couldn't find everything by myself, so let's point me at it.");
   say("Open your CRM's Home page in Notion, click Share -> Copy link,");
   say("and paste that link here. Before that works, the Home page has to");
   say("be connected to your integration: on the Home page click the •••");
   say('menu (top right) -> "Connect to" -> pick your integration.');
+  say("(Connected it just now? Notion can take a minute to catch up.)");
   say("");
 
   for (;;) {

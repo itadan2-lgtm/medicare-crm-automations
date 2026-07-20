@@ -44,4 +44,35 @@ async function findDataSources(notion, pageId) {
   return found;
 }
 
-module.exports = { DATABASES, extractPageId, findDataSources };
+// Finds the databases with no link at all: asks Notion for everything
+// the integration can see and matches titles against the template's.
+// Returns { found, duplicates } - a title lands in `duplicates` when
+// more than one match exists (say, two copies of the template), in
+// which case walking an explicit Home page link is the tiebreaker.
+async function searchDataSources(notion) {
+  const byTitle = {};
+  let cursor;
+  do {
+    const res = await notion.search({
+      filter: { property: "object", value: "data_source" },
+      page_size: 100,
+      start_cursor: cursor,
+    });
+    for (const item of res.results) {
+      const title = (item.title || []).map((t) => t.plain_text).join("");
+      if (!(title in DATABASES)) continue;
+      (byTitle[title] = byTitle[title] || []).push(item.id);
+    }
+    cursor = res.has_more ? res.next_cursor : undefined;
+  } while (cursor);
+
+  const found = {};
+  const duplicates = [];
+  for (const [title, ids] of Object.entries(byTitle)) {
+    if (ids.length === 1) found[title] = ids[0];
+    else duplicates.push(title);
+  }
+  return { found, duplicates };
+}
+
+module.exports = { DATABASES, extractPageId, findDataSources, searchDataSources };

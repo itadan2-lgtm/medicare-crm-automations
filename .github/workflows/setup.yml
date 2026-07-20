@@ -14,8 +14,8 @@ on:
   workflow_dispatch:
     inputs:
       home_page_link:
-        description: "Link to your CRM Home page in Notion (Share -> Copy link)"
-        required: true
+        description: "Optional - leave empty and setup finds your databases on its own. Only needed if the run summary asks for it."
+        required: false
         type: string
 
 permissions:
