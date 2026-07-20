@@ -44,25 +44,30 @@ refers to your copy - your IDs will be different from any screenshots.
 
 **2. Create a Notion integration.**
 Go to notion.so/my-integrations -> New integration. Name it whatever.
-Copy the secret it gives you. Then open each of the 7 databases
-(Clients, Leads, SOA Records, Appointments, Policies, Carrier
-Reference, Tasks) and connect it: ••• menu -> Connect to -> your
-integration. Has to be done per database, Notion doesn't inherit this
-from the parent page.
+Copy the secret it gives you. Then connect it to your CRM, once: open
+your Home page, ••• menu -> Connect to -> your integration. The
+databases inside the Home page come along with it. (If setup later
+reports one as missing, open just that database and connect it the
+same way, then run setup again.)
 
 **3. Finish setup - two ways to do it. Pick one.**
 
 **The browser way (recommended - no terminal, nothing to install).**
-Everything happens on github.com:
+Everything happens on github.com; a phone browser works fine:
 
-1. Add your Notion secret to GitHub, once: repo -> Settings -> Secrets
+1. Get your own copy of this project on GitHub (free account is fine).
+   Given a template link? Open it -> Use this template -> Create a new
+   repository (keep it Private). Given a zip? github.com -> + -> New
+   repository (private) -> "uploading an existing file" -> drag in
+   everything from the unzipped folder.
+2. Add your Notion secret to GitHub, once: repo -> Settings -> Secrets
    and variables -> Actions -> New repository secret. Name it
    `NOTION_API_KEY`, paste the secret from step 2 as the value.
-2. Actions tab -> **One-time setup** -> Run workflow -> paste the link
+3. Actions tab -> **One-time setup** -> Run workflow -> paste the link
    to your CRM's Home page (in Notion: Share -> Copy link) -> Run.
    Leave the branch dropdown alone - the preselected one is correct,
    and the run will stop and tell you if it's ever set wrong.
-3. Open the run when it finishes. Its Summary page says, in plain
+4. Open the run when it finishes. Its Summary page says, in plain
    English, whether everything connected - and if not, exactly what to
    fix and that you can just run it again.
 
@@ -86,9 +91,11 @@ still works too.
 
 **4. Want email or text alerts?** Add these as additional GitHub
 secrets, same screen as `NOTION_API_KEY`: `SENDGRID_API_KEY`,
-`ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` for email; `TWILIO_ACCOUNT_SID`,
-`TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `ALERT_SMS_TO` for texts.
-Skip this and results just stay in each run's log.
+`ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` for email (SendGrid free tier is
+plenty); `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`,
+`TWILIO_FROM_NUMBER`, `ALERT_SMS_TO` for texts (Twilio charges a few
+cents per text - the only thing here that isn't free). Skip this and
+results just stay in each run's log.
 
 **5. Turn on the daily checks.**
 `.github/workflows/daily-checks.yml` runs automatically once secrets are

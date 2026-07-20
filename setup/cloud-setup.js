@@ -120,9 +120,9 @@ async function main() {
     report(`### ⚠️ Found ${7 - missing.length} of 7 databases - almost there`);
     report("Still missing:\n" + missing.map((t) => `- ${t}`).join("\n"));
     report(
-      "Each database has to be connected to your integration one by one (Notion doesn't " +
-        "pass it down from the Home page). In Notion, open each missing database, click its " +
-        "**•••** menu → **Connect to** → your integration. Then run this workflow again - " +
+      "Connecting the Home page usually covers everything inside it, but these didn't pick " +
+        "it up. In Notion, open each missing database, click its **•••** menu → " +
+        "**Connect to** → your integration. Then run this workflow again - " +
         "what was already found is saved."
     );
     process.exitCode = 1;

@@ -276,7 +276,7 @@
     <div>
       <div class="eyebrow">Field-Ready Setup</div>
       <h1 class="title">Setup Guide</h1>
-      <p class="hero-sub">Seven steps to get the compliance automations running on your own free accounts. No hosting, no subscriptions.</p>
+      <p class="hero-sub">Seven steps, all in your web browser — a phone works fine. Runs on your own free accounts: no hosting, no subscriptions, no terminal.</p>
       <div class="meta-strip">
         <span class="meta-pill">⏱ ~20 minutes</span>
         <span class="meta-pill">💵 $0 to run</span>
@@ -301,7 +301,7 @@
     </div>
     <div class="check-item">
       <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="#5C7A63" stroke-width="1.4" fill="none"/><path d="M5 8l2 2 4-4" stroke="#5C7A63" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      A free Vercel account <span style="color:var(--slate)">(only for step 6)</span>
+      A free Vercel account <span style="color:var(--slate)">(only for the optional step 6)</span>
     </div>
   </div>
 
@@ -310,7 +310,7 @@
   </div>
 
   <div class="callout calm">
-    <b>New to this kind of setup?</b> You don't need a coding background. Every command below has a <b>Copy</b> button, and each step says exactly what to click and where. Nothing here is permanent — the integration, the secrets, and the Vercel project can all be disconnected in a click if you back out.
+    <b>New to this kind of setup?</b> You don't need a coding background, and nothing here uses a terminal unless you choose to. Each step says exactly what to click and where, and the setup checks itself and tells you in plain English if something needs fixing. Nothing is permanent — the integration, the secrets, and the optional Vercel project can all be disconnected in a click if you back out.
   </div>
 
   <div class="section-label">Walkthrough</div>
@@ -348,7 +348,7 @@
         </div>
         <p class="mockup-caption">Illustrative — Notion's actual page may look slightly different.</p>
 
-        <div class="step-text" style="margin-top:16px;">Then, for <b>each of the 7 databases</b> (Clients, Leads, SOA Records, Appointments, Policies, Carrier Reference, Tasks), open it and connect your integration:</div>
+        <div class="step-text" style="margin-top:16px;">Then connect it to your CRM, <b>once</b>: open your <b>Home</b> page in Notion, click the <b>•••</b> menu (top right) → <b>Connect to</b> → pick your integration. The databases inside the Home page come along with it.</div>
 
         <div class="mockup" style="max-width:260px;">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">•••</div></div>
@@ -361,11 +361,7 @@
             </div>
           </div>
         </div>
-        <p class="mockup-caption">Repeat this for all 7 databases — Notion doesn't inherit the connection from the parent page.</p>
-
-        <div class="callout calm" style="margin-top:18px;">
-          <b>Don't want to touch a terminal? You can skip steps 3 and 4 entirely</b> and do everything on github.com instead: in your repo, go to <b>Settings → Secrets and variables → Actions → New repository secret</b>, add one secret named <code>NOTION_API_KEY</code> with the secret you just copied. Then go to the <b>Actions</b> tab → <b>One-time setup</b> → <b>Run workflow</b>, paste the link to your Home page (Share → Copy link in Notion), and run it — leave the branch dropdown on its preselected option. When it finishes, its Summary page tells you in plain English whether everything connected — and if something's missing, exactly what to fix before running it again. Then continue from step 5.
-        </div>
+        <p class="mockup-caption">If step 5 later reports a database as missing, open just that one and connect it the same way — then run step 5 again.</p>
       </div>
     </div>
 
@@ -373,19 +369,19 @@
     <div class="step">
       <div class="rail"><div class="step-num">3</div></div>
       <div class="step-body">
-        <div class="step-title">Run the guided setup</div>
-        <div class="step-text">Open a terminal in the unzipped folder and run these two commands — tap a line below to copy it:</div>
-        <div class="terminal">
-          <div class="line cmd" data-copy="npm install"><span class="cmd-text"><span class="prompt">$</span> npm install</span><button type="button" class="copy-btn" aria-label="Copy: npm install">Copy</button></div>
-          <div class="line cmd" data-copy="npm run setup"><span class="cmd-text"><span class="prompt">$</span> npm run setup</span><button type="button" class="copy-btn" aria-label="Copy: npm run setup">Copy</button></div>
-          <div class="line dim">&nbsp;</div>
-          <div class="line dim">STEP 1 OF 4 — Your Notion secret key</div>
-          <div class="line dim">Paste your Notion secret key here:</div>
-          <div class="line pass">✔ That key works.</div>
-          <div class="line dim">STEP 2 OF 4 — Point me at your CRM</div>
-          <div class="line pass">✔ Found all 7 databases.</div>
+        <div class="step-title">Get your own copy on GitHub</div>
+        <div class="step-text">Sign in at <code>github.com</code> (a free account is fine). If you were given a template link, open it and click <b>Use this template → Create a new repository</b>. Name it anything, keep it <b>Private</b>, and click <b>Create repository</b>.</div>
+
+        <div class="mockup">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/…/medicare-crm-automations</div></div>
+          <div class="mockup-body">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:600; color:var(--ink);">medicare-crm-automations</span>
+              <span class="btn-mock" style="background:var(--sage);">Use this template ▾</span>
+            </div>
+          </div>
         </div>
-        <div class="step-text" style="margin-top:14px;">It asks a few plain-English questions — your Notion secret from step 2, a link to your Home page, whether you want email or text alerts — checks each answer the moment you type it, and saves everything itself. Nothing to edit by hand. If it says something's wrong, it tells you exactly how to fix it. Re-run it any time to change an answer.</div>
+        <p class="mockup-caption">Got a zip file instead of a link? On github.com: <b>+ → New repository</b> (private) → on the new repo's page choose <b>uploading an existing file</b> and drag in everything from the unzipped folder.</p>
       </div>
     </div>
 
@@ -393,19 +389,16 @@
     <div class="step">
       <div class="rail"><div class="step-num">4</div></div>
       <div class="step-body">
-        <div class="step-title">Copy the same settings into GitHub</div>
-        <div class="step-text">So the daily checks can run in the cloud without your computer on. In your GitHub repo: <b>Settings → Secrets and variables → Actions → New repository secret</b>, one per name — the end of <code>npm run setup</code> prints the exact list, and the values are in the <code>.env</code> file it saved in this folder.</div>
+        <div class="step-title">Add your one secret</div>
+        <div class="step-text">In your new repo: <b>Settings → Secrets and variables → Actions → New repository secret</b>. Name: <code>NOTION_API_KEY</code>. Value: the secret you copied in step 2. This is the only thing you ever have to paste into GitHub.</div>
 
         <div class="mockup">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/medicare-crm-automations/settings/secrets/actions</div></div>
           <div class="mockup-body">
-            <div class="secrets-row"><span class="name">NOTION_API_KEY</span><span class="val">Updated 2m ago</span></div>
-            <div class="secrets-row"><span class="name">CLIENTS_DATA_SOURCE_ID</span><span class="val">Updated 2m ago</span></div>
-            <div class="secrets-row"><span class="name">APPOINTMENTS_DATA_SOURCE_ID</span><span class="val">Updated 2m ago</span></div>
-            <div class="secrets-row"><span class="name">···</span><span class="val"></span></div>
+            <div class="secrets-row"><span class="name">NOTION_API_KEY</span><span class="val">Updated just now</span></div>
           </div>
         </div>
-        <p class="mockup-caption">Email/SMS variables are optional — leave them blank and the scripts just log to console instead.</p>
+        <p class="mockup-caption">Secrets are hidden from everyone once saved — including whoever wrote this code.</p>
       </div>
     </div>
 
@@ -413,18 +406,18 @@
     <div class="step">
       <div class="rail"><div class="step-num">5</div></div>
       <div class="step-body">
-        <div class="step-title">Turn on the daily checks</div>
-        <div class="step-text">The included workflow runs automatically once secrets are set (8am ET by default). Trigger it by hand first to confirm it works before trusting it unattended:</div>
+        <div class="step-title">Run the one-time setup</div>
+        <div class="step-text">Go to the <b>Actions</b> tab → <b>One-time setup</b> → <b>Run workflow</b>. Paste the link to your CRM's Home page (in Notion: <b>Share → Copy link</b>), leave the branch dropdown on its preselected option, and click the green <b>Run workflow</b> button.</div>
 
         <div class="mockup">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/medicare-crm-automations/actions</div></div>
           <div class="mockup-body">
-            <div style="font-weight:600; margin-bottom:8px;">Daily Compliance & Deadline Checks</div>
-            <div class="run-row"><div class="status-dot"></div> Run #14 · completed · 38s ago</div>
-            <div class="run-row"><div class="status-dot" style="background:var(--line)"></div> Run #13 · completed · 1d ago</div>
-            <span class="btn-mock" style="margin-top:6px; display:inline-block;">Run workflow ▾</span>
+            <div style="font-weight:600; margin-bottom:8px;">One-time setup</div>
+            <div style="background:var(--parchment); border-radius:6px; padding:9px 12px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--slate); margin-bottom:8px;">Link to your CRM Home page in Notion…</div>
+            <span class="btn-mock" style="background:var(--sage);">Run workflow</span>
           </div>
         </div>
+        <div class="step-text" style="margin-top:14px;">When it finishes (about a minute), open the run — its <b>Summary</b> says in plain English whether all 7 databases connected, and if one is missing, exactly what to click in Notion before running it again. Once it's green, you're done: <b>the checks run by themselves every morning from now on</b> (8am ET), free on GitHub.</div>
       </div>
     </div>
 
@@ -432,8 +425,9 @@
     <div class="step">
       <div class="rail"><div class="step-num">6</div></div>
       <div class="step-body">
-        <div class="step-title">Deploy the lead webhook <span class="step-optional">optional</span></div>
-        <div class="step-text">Only needed if you want form submissions to auto-create leads. Push this repo to your own GitHub, then:</div>
+        <div class="step-title">Add alerts &amp; auto-import <span class="step-optional">optional</span></div>
+        <div class="step-text"><b>Email or text alerts:</b> add more secrets on the same screen as step 4 — <code>SENDGRID_API_KEY</code>, <code>ALERT_EMAIL_TO</code>, <code>ALERT_EMAIL_FROM</code> for email (SendGrid's free tier is plenty), or <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_FROM_NUMBER</code>, <code>ALERT_SMS_TO</code> for texts (Twilio charges a few cents per text). Skip this and results simply stay in each morning's run log.</div>
+        <div class="step-text"><b>Auto-import leads from a web form:</b> deploy the included webhook to Vercel (free):</div>
 
         <div class="mockup">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">vercel.com/new</div></div>
@@ -445,7 +439,7 @@
             </div>
           </div>
         </div>
-        <div class="step-text" style="margin-top:14px;">Add the same Notion variables plus <code>WEBHOOK_SECRET</code> under Vercel's Environment Variables. Point Tally, Typeform, or a plain form at <code>https://your-project.vercel.app/api/lead-webhook</code>.</div>
+        <div class="step-text" style="margin-top:14px;">Add just <code>NOTION_API_KEY</code> and <code>WEBHOOK_SECRET</code> (any random string) under Vercel's Environment Variables. Point Tally, Typeform, or a plain form at <code>https://your-project.vercel.app/api/lead-webhook</code>.</div>
       </div>
     </div>
 
@@ -453,29 +447,34 @@
     <div class="step">
       <div class="rail"><div class="step-num">7</div></div>
       <div class="step-body">
-        <div class="step-title">Test it</div>
-        <div class="terminal">
-          <div class="line cmd" data-copy="npm run doctor"><span class="cmd-text"><span class="prompt">$</span> npm run doctor</span><button type="button" class="copy-btn" aria-label="Copy: npm run doctor">Copy</button></div>
-          <div class="line pass">✔ Notion accepts your key.</div>
-          <div class="line pass">✔ Can read "Clients".  ✔ Can read "SOA Records".  ...</div>
-          <div class="line dim">Everything looks good.</div>
-          <div class="line dim">&nbsp;</div>
-          <div class="line cmd" data-copy="npm test"><span class="cmd-text"><span class="prompt">$</span> npm test</span><button type="button" class="copy-btn" aria-label="Copy: npm test">Copy</button></div>
-          <div class="line pass">24 passed, 0 failed</div>
-          <div class="line pass">7 passed, 0 failed</div>
-          <div class="line dim">&nbsp;</div>
-          <div class="line cmd" data-copy="npm run soa-check"><span class="cmd-text"><span class="prompt">$</span> npm run soa-check</span><button type="button" class="copy-btn" aria-label="Copy: npm run soa-check">Copy</button></div>
-          <div class="line dim">Checking 5 appointment(s)...</div>
-          <div class="line pass">Done. 3 appointment(s) flagged.</div>
+        <div class="step-title">Watch it work</div>
+        <div class="step-text">Don't wait for tomorrow morning — trigger a run right now: <b>Actions</b> tab → <b>Daily Compliance &amp; Deadline Checks</b> → <b>Run workflow</b>. Open the finished run to see what was checked and what was flagged (or watch your inbox, if you set up alerts).</div>
+
+        <div class="mockup">
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/medicare-crm-automations/actions</div></div>
+          <div class="mockup-body">
+            <div style="font-weight:600; margin-bottom:8px;">Daily Compliance & Deadline Checks</div>
+            <div class="run-row"><div class="status-dot"></div> Run #14 · completed · 38s ago</div>
+            <div class="run-row"><div class="status-dot" style="background:var(--line)"></div> Run #13 · completed · 1d ago</div>
+            <span class="btn-mock" style="margin-top:6px; display:inline-block;">Run workflow ▾</span>
+          </div>
         </div>
-        <div class="step-text" style="margin-top:14px;">The first command is a plain-English health check you can run whenever something seems off. The last one runs a real check against your actual Notion data — the fastest way to know everything's wired up right.</div>
+
+        <div class="step-text" style="margin-top:16px;">Prefer running things on your own computer, or want to tinker? The same setup works locally — open a terminal in the project folder:</div>
+        <div class="terminal">
+          <div class="line cmd" data-copy="npm install"><span class="cmd-text"><span class="prompt">$</span> npm install</span><button type="button" class="copy-btn" aria-label="Copy: npm install">Copy</button></div>
+          <div class="line cmd" data-copy="npm run setup"><span class="cmd-text"><span class="prompt">$</span> npm run setup</span><button type="button" class="copy-btn" aria-label="Copy: npm run setup">Copy</button></div>
+          <div class="line dim">…a guided assistant asks a few questions and saves everything…</div>
+          <div class="line cmd" data-copy="npm run doctor"><span class="cmd-text"><span class="prompt">$</span> npm run doctor</span><button type="button" class="copy-btn" aria-label="Copy: npm run doctor">Copy</button></div>
+          <div class="line pass">Everything looks good.</div>
+        </div>
       </div>
     </div>
 
   </div>
 
   <div class="callout warn">
-    <b>Stuck on a step?</b> Run <code>npm run doctor</code> — it checks everything and says, in plain English, what to fix. <code>INSTRUCTIONS.md</code> in the same folder covers the same ground in plain text, easier to search and copy from.
+    <b>Stuck on a step?</b> Open your latest run in the <b>Actions</b> tab — its Summary explains, in plain English, what to fix. (On your own computer, <code>npm run doctor</code> does the same.) <code>INSTRUCTIONS.md</code> in the project covers the same ground in plain text.
   </div>
 
   <footer>

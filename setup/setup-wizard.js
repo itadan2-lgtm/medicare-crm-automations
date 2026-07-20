@@ -133,9 +133,9 @@ async function stepFindIds(notionKey, existing) {
     say(`\nFound ${7 - missing.length} of 7 databases. Still missing:`);
     for (const title of missing) say(`  - ${title}`);
     say("");
-    say("Each database has to be connected to your integration one by one");
-    say("(Notion doesn't pass it down automatically). Open each missing one,");
-    say('click its ••• menu -> "Connect to" -> your integration.');
+    say("Connecting the Home page usually covers everything inside it, but");
+    say("these didn't pick it up. Open each missing one in Notion, click");
+    say('its ••• menu -> "Connect to" -> your integration.');
     say("");
     const keepGoing = missing.length < 7 && (await askYesNo("Continue with just these for now? (You can re-run setup later.)"));
     if (keepGoing) {
