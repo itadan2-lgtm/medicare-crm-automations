@@ -60,6 +60,8 @@ Everything happens on github.com:
    `NOTION_API_KEY`, paste the secret from step 2 as the value.
 2. Actions tab -> **One-time setup** -> Run workflow -> paste the link
    to your CRM's Home page (in Notion: Share -> Copy link) -> Run.
+   Leave the branch dropdown alone - the preselected one is correct,
+   and the run will stop and tell you if it's ever set wrong.
 3. Open the run when it finishes. Its Summary page says, in plain
    English, whether everything connected - and if not, exactly what to
    fix and that you can just run it again.
