@@ -12,6 +12,19 @@ const { Client } = require("@notionhq/client");
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
+// The Leads ID comes from the env var if set, otherwise from the
+// data-sources.json that the "One-time setup" workflow commits - which
+// deploys along with this function, so most people only need to set
+// NOTION_API_KEY and WEBHOOK_SECRET in Vercel.
+let LEADS_ID = process.env.LEADS_DATA_SOURCE_ID;
+if (!LEADS_ID) {
+  try {
+    LEADS_ID = require("../automations/internal/data-sources.json").LEADS_DATA_SOURCE_ID;
+  } catch {
+    // no saved file - the error response below explains what to do
+  }
+}
+
 function pick(body, keys) {
   for (const k of keys) {
     if (body[k] !== undefined && body[k] !== null && body[k] !== "") return body[k];
@@ -47,8 +60,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (!process.env.LEADS_DATA_SOURCE_ID) {
-    res.status(500).json({ error: "Server misconfigured: LEADS_DATA_SOURCE_ID is not set" });
+  if (!LEADS_ID) {
+    res.status(500).json({ error: "Server misconfigured: run the One-time setup workflow or set LEADS_DATA_SOURCE_ID" });
     return;
   }
 
@@ -63,7 +76,7 @@ module.exports = async function handler(req, res) {
     if (phone) properties.Phone = { phone_number: String(phone) };
 
     const page = await notion.pages.create({
-      parent: { data_source_id: process.env.LEADS_DATA_SOURCE_ID },
+      parent: { data_source_id: LEADS_ID },
       properties,
     });
 

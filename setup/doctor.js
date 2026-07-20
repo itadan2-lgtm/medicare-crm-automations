@@ -64,9 +64,13 @@ async function main() {
     return;
   }
 
-  // 3. Each database
+  // 3. Each database (env first, then whatever One-time setup saved)
+  let saved = {};
+  try {
+    saved = require("../automations/internal/data-sources.json");
+  } catch {}
   for (const [title, envVar] of Object.entries(DATABASES)) {
-    const id = process.env[envVar];
+    const id = process.env[envVar] || saved[envVar];
     if (!id) {
       bad(`"${title}" isn't set up yet.`);
       note("Run `npm run setup` and paste your Home page link when asked.");

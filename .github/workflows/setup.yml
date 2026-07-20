@@ -1,0 +1,47 @@
+# Browser-only setup - no terminal needed. From the repo's Actions tab,
+# pick "One-time setup" -> "Run workflow" and paste the link to your
+# CRM's Home page in Notion.
+# The run's Summary page explains, in plain English, what happened and
+# what (if anything) still needs doing. Safe to run as many times as
+# you like.
+#
+# Needs one repo secret first: NOTION_API_KEY
+# (Settings -> Secrets and variables -> Actions -> New repository secret)
+
+name: One-time setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      home_page_link:
+        description: "Link to your CRM Home page in Notion (Share -> Copy link)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - name: Find your databases and save their IDs
+        run: node setup/cloud-setup.js
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          HOME_PAGE_LINK: ${{ inputs.home_page_link }}
+      - name: Save the result to the repo
+        if: always()
+        run: |
+          if ! git diff --quiet -- automations/internal/data-sources.json 2>/dev/null \
+             || [ -n "$(git status --porcelain automations/internal/data-sources.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add automations/internal/data-sources.json
+            git commit -m "Save database IDs found by one-time setup"
+            git push
+          fi

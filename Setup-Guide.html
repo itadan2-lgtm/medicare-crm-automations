@@ -362,6 +362,10 @@
           </div>
         </div>
         <p class="mockup-caption">Repeat this for all 7 databases — Notion doesn't inherit the connection from the parent page.</p>
+
+        <div class="callout calm" style="margin-top:18px;">
+          <b>Don't want to touch a terminal? You can skip steps 3 and 4 entirely</b> and do everything on github.com instead: in your repo, go to <b>Settings → Secrets and variables → Actions → New repository secret</b>, add one secret named <code>NOTION_API_KEY</code> with the secret you just copied. Then go to the <b>Actions</b> tab → <b>One-time setup</b> → <b>Run workflow</b>, paste the link to your Home page (Share → Copy link in Notion), and run it. When it finishes, its Summary page tells you in plain English whether everything connected — and if something's missing, exactly what to fix before running it again. Then continue from step 5.
+        </div>
       </div>
     </div>
 

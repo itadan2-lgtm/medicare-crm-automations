@@ -50,27 +50,43 @@ Reference, Tasks) and connect it: ••• menu -> Connect to -> your
 integration. Has to be done per database, Notion doesn't inherit this
 from the parent page.
 
-**3. Run the guided setup.**
+**3. Finish setup - two ways to do it. Pick one.**
+
+**The browser way (recommended - no terminal, nothing to install).**
+Everything happens on github.com:
+
+1. Add your Notion secret to GitHub, once: repo -> Settings -> Secrets
+   and variables -> Actions -> New repository secret. Name it
+   `NOTION_API_KEY`, paste the secret from step 2 as the value.
+2. Actions tab -> **One-time setup** -> Run workflow -> paste the link
+   to your CRM's Home page (in Notion: Share -> Copy link) -> Run.
+3. Open the run when it finishes. Its Summary page says, in plain
+   English, whether everything connected - and if not, exactly what to
+   fix and that you can just run it again.
+
+That's it. The workflow finds all 7 database IDs itself and saves them
+to the repo (`automations/internal/data-sources.json` - they're not
+secrets, they're useless without your key). The daily checks start
+running on their own from the next morning.
+
+**The computer way** (if you'd rather run things locally, or want to
+tinker):
 ```bash
 npm install
 npm run setup
 ```
-It asks a few plain-English questions - paste your Notion secret, paste
-a link to your Home page, choose whether you want email/text alerts -
-checks each answer as you go, finds all the database IDs itself, and
-writes the settings file for you. Nothing to edit by hand. Re-run it
-any time to change an answer; run `npm run doctor` any time to get a
-plain-English report of what's working and what isn't.
+A guided assistant asks a few plain-English questions - your Notion
+secret, your Home page link, whether you want alerts - checks each
+answer as you go, and writes the settings file for you. `npm run
+doctor` reports the health of the whole setup any time. The fully
+manual route (`npm run find-ids`, hand-edit `.env` per `.env.example`)
+still works too.
 
-(Prefer doing it manually? `npm run find-ids -- <Home page link>`
-prints a ready-to-paste `.env` block, and `.env.example` documents
-every setting. Email/SMS vars are optional - leave blank and the
-scripts just log to console instead of sending anything.)
-
-**4. Copy the same settings into GitHub** so the daily checks can run
-without your computer on. Repo -> Settings -> Secrets and variables ->
-Actions -> New repository secret, one per name in your `.env` (the end
-of `npm run setup` prints the exact list).
+**4. Want email or text alerts?** Add these as additional GitHub
+secrets, same screen as `NOTION_API_KEY`: `SENDGRID_API_KEY`,
+`ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` for email; `TWILIO_ACCOUNT_SID`,
+`TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `ALERT_SMS_TO` for texts.
+Skip this and results just stay in each run's log.
 
 **5. Turn on the daily checks.**
 `.github/workflows/daily-checks.yml` runs automatically once secrets are
@@ -82,8 +98,10 @@ before trusting it unattended.
 **6. Deploy the lead webhook** (optional, only if you want auto-import).
 Push this repo to your own GitHub, then vercel.com -> New Project ->
 import it. Vercel finds `api/lead-webhook.js` automatically, no config
-needed. Add the same Notion vars plus `WEBHOOK_SECRET` in Vercel's
-Environment Variables. Your endpoint is
+needed. Add just `NOTION_API_KEY` and `WEBHOOK_SECRET` (any random
+string; the form has to send it back in a header) in Vercel's
+Environment Variables - the database IDs deploy with the repo if you
+ran the One-time setup workflow. Your endpoint is
 `https://<your-project>.vercel.app/api/lead-webhook` - point Tally,
 Typeform, or a plain form at that, with header
 `x-webhook-secret: <your WEBHOOK_SECRET>`.

@@ -6,15 +6,26 @@
 
 require("dotenv").config();
 
+// IDs come from env vars (local .env or GitHub secrets), falling back
+// to data-sources.json, which the browser-only "One-time setup"
+// workflow commits. Env always wins so a secret can override the file.
+let saved = {};
+try {
+  saved = require("./data-sources.json");
+} catch {
+  // no file yet - setup hasn't run, or env vars are being used instead
+}
+const id = (name) => process.env[name] || saved[name];
+
 module.exports = {
   DATA_SOURCES: {
-    CLIENTS: process.env.CLIENTS_DATA_SOURCE_ID,
-    LEADS: process.env.LEADS_DATA_SOURCE_ID,
-    SOA_RECORDS: process.env.SOA_RECORDS_DATA_SOURCE_ID,
-    APPOINTMENTS: process.env.APPOINTMENTS_DATA_SOURCE_ID,
-    POLICIES: process.env.POLICIES_DATA_SOURCE_ID,
-    CARRIER_REFERENCE: process.env.CARRIER_REFERENCE_DATA_SOURCE_ID,
-    TASKS: process.env.TASKS_DATA_SOURCE_ID,
+    CLIENTS: id("CLIENTS_DATA_SOURCE_ID"),
+    LEADS: id("LEADS_DATA_SOURCE_ID"),
+    SOA_RECORDS: id("SOA_RECORDS_DATA_SOURCE_ID"),
+    APPOINTMENTS: id("APPOINTMENTS_DATA_SOURCE_ID"),
+    POLICIES: id("POLICIES_DATA_SOURCE_ID"),
+    CARRIER_REFERENCE: id("CARRIER_REFERENCE_DATA_SOURCE_ID"),
+    TASKS: id("TASKS_DATA_SOURCE_ID"),
   },
 
   // SOA compliance
