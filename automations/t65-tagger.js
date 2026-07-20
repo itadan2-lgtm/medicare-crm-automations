@@ -55,7 +55,7 @@ async function run() {
         Task: setProp.title(taskTitle),
         Client: setProp.relation([page.id]),
         "Due Date": setProp.date(iepStartDate(dob).toISOString().slice(0, 10)),
-        Status: setProp.status("Not Started"),
+        Status: setProp.select("Not Started"),
         Priority: setProp.select("Medium"),
       },
     });

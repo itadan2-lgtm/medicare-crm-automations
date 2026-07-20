@@ -80,7 +80,7 @@ async function ensureFollowUpTask(clientRelationIds, appointmentTitle, reason) {
       Task: setProp.title(taskTitle),
       Client: setProp.relation(clientRelationIds),
       "Due Date": setProp.date(new Date().toISOString().slice(0, 10)),
-      Status: setProp.status("Not Started"),
+      Status: setProp.select("Not Started"),
       Priority: setProp.select("High"),
     },
   });
