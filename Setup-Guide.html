@@ -240,9 +240,13 @@
     .mockup-body { font-size: 12px; }
     .terminal { font-size: 11.5px; padding: 14px 14px; }
     .terminal .line.cmd { flex-wrap: wrap; }
-    .copy-btn { font-size: 10.5px; padding: 6px 10px; }
+    /* Fingers, not cursors: keep tap targets at least 44px tall */
+    .copy-btn { font-size: 11px; padding: 10px 14px; min-height: 44px; }
+    .terminal .line.cmd { padding: 6px; }
     .progress-label { font-size: 10px; }
     .progress-rail { padding: 9px 16px; }
+    body { font-size: 15px; }
+    .wrap { padding: 0 16px 80px; }
   }
 </style>
 </head>
@@ -365,18 +369,19 @@
     <div class="step">
       <div class="rail"><div class="step-num">3</div></div>
       <div class="step-body">
-        <div class="step-title">Find your data source IDs</div>
-        <div class="step-text">Open a terminal in the unzipped folder and run — tap any line below to copy it:</div>
+        <div class="step-title">Run the guided setup</div>
+        <div class="step-text">Open a terminal in the unzipped folder and run these two commands — tap a line below to copy it:</div>
         <div class="terminal">
           <div class="line cmd" data-copy="npm install"><span class="cmd-text"><span class="prompt">$</span> npm install</span><button type="button" class="copy-btn" aria-label="Copy: npm install">Copy</button></div>
-          <div class="line cmd" data-copy="npm run find-ids -- "><span class="cmd-text"><span class="prompt">$</span> npm run find-ids -- &lt;link to your Home page&gt;</span><button type="button" class="copy-btn" aria-label="Copy command, then paste your Home page link right after it">Copy</button></div>
+          <div class="line cmd" data-copy="npm run setup"><span class="cmd-text"><span class="prompt">$</span> npm run setup</span><button type="button" class="copy-btn" aria-label="Copy: npm run setup">Copy</button></div>
           <div class="line dim">&nbsp;</div>
-          <div class="line dim">Paste this into your .env:</div>
-          <div class="line pass">CLIENTS_DATA_SOURCE_ID=1aa33263-ad2f...</div>
-          <div class="line pass">LEADS_DATA_SOURCE_ID=e3c3dcbe-76d3...</div>
-          <div class="line dim">...</div>
+          <div class="line dim">STEP 1 OF 4 — Your Notion secret key</div>
+          <div class="line dim">Paste your Notion secret key here:</div>
+          <div class="line pass">✔ That key works.</div>
+          <div class="line dim">STEP 2 OF 4 — Point me at your CRM</div>
+          <div class="line pass">✔ Found all 7 databases.</div>
         </div>
-        <div class="step-text" style="margin-top:14px;">This exists because hunting these down by hand through the raw API is genuinely annoying. Don't do that.</div>
+        <div class="step-text" style="margin-top:14px;">It asks a few plain-English questions — your Notion secret from step 2, a link to your Home page, whether you want email or text alerts — checks each answer the moment you type it, and saves everything itself. Nothing to edit by hand. If it says something's wrong, it tells you exactly how to fix it. Re-run it any time to change an answer.</div>
       </div>
     </div>
 
@@ -384,8 +389,8 @@
     <div class="step">
       <div class="rail"><div class="step-num">4</div></div>
       <div class="step-body">
-        <div class="step-title">Set your secrets</div>
-        <div class="step-text">Copy <code>.env.example</code> to <code>.env</code> for local testing, or add each name straight to GitHub: repo → <b>Settings → Secrets and variables → Actions</b>.</div>
+        <div class="step-title">Copy the same settings into GitHub</div>
+        <div class="step-text">So the daily checks can run in the cloud without your computer on. In your GitHub repo: <b>Settings → Secrets and variables → Actions → New repository secret</b>, one per name — the end of <code>npm run setup</code> prints the exact list, and the values are in the <code>.env</code> file it saved in this folder.</div>
 
         <div class="mockup">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/medicare-crm-automations/settings/secrets/actions</div></div>
@@ -446,6 +451,11 @@
       <div class="step-body">
         <div class="step-title">Test it</div>
         <div class="terminal">
+          <div class="line cmd" data-copy="npm run doctor"><span class="cmd-text"><span class="prompt">$</span> npm run doctor</span><button type="button" class="copy-btn" aria-label="Copy: npm run doctor">Copy</button></div>
+          <div class="line pass">✔ Notion accepts your key.</div>
+          <div class="line pass">✔ Can read "Clients".  ✔ Can read "SOA Records".  ...</div>
+          <div class="line dim">Everything looks good.</div>
+          <div class="line dim">&nbsp;</div>
           <div class="line cmd" data-copy="npm test"><span class="cmd-text"><span class="prompt">$</span> npm test</span><button type="button" class="copy-btn" aria-label="Copy: npm test">Copy</button></div>
           <div class="line pass">24 passed, 0 failed</div>
           <div class="line pass">7 passed, 0 failed</div>
@@ -454,14 +464,14 @@
           <div class="line dim">Checking 5 appointment(s)...</div>
           <div class="line pass">Done. 3 appointment(s) flagged.</div>
         </div>
-        <div class="step-text" style="margin-top:14px;">The second command runs a real check against your actual Notion data — the fastest way to know everything's wired up right.</div>
+        <div class="step-text" style="margin-top:14px;">The first command is a plain-English health check you can run whenever something seems off. The last one runs a real check against your actual Notion data — the fastest way to know everything's wired up right.</div>
       </div>
     </div>
 
   </div>
 
   <div class="callout warn">
-    <b>Stuck on a step?</b> Re-read <code>INSTRUCTIONS.md</code> in the same folder — it covers the same ground in plain text, which is easier to search and copy commands from.
+    <b>Stuck on a step?</b> Run <code>npm run doctor</code> — it checks everything and says, in plain English, what to fix. <code>INSTRUCTIONS.md</code> in the same folder covers the same ground in plain text, easier to search and copy from.
   </div>
 
   <footer>

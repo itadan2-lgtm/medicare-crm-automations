@@ -19,7 +19,7 @@ You will not need to open most of this. Here's the map:
 
 | Folder | What it is | Do you need to open it? |
 |---|---|---|
-| `setup/` | One script, run it once | Yes, step 3 below |
+| `setup/` | Guided setup + health check | Yes, step 3 below |
 | `automations/` | The 4 daily scripts | Only if something's not working |
 | `automations/internal/` | Shared code the scripts lean on | No |
 | `automations/tests/` | Proof the logic works (30 checks) | No, but `npm test` is reassuring |
@@ -44,25 +44,33 @@ refers to your copy - your IDs will be different from any screenshots.
 
 **2. Create a Notion integration.**
 Go to notion.so/my-integrations -> New integration. Name it whatever.
-Copy the secret it gives you, that's `NOTION_API_KEY`. Then open each of
-the 7 databases (Clients, Leads, SOA Records, Appointments, Policies,
-Carrier Reference, Tasks) and connect it: ••• menu -> Connect to -> your
+Copy the secret it gives you. Then open each of the 7 databases
+(Clients, Leads, SOA Records, Appointments, Policies, Carrier
+Reference, Tasks) and connect it: ••• menu -> Connect to -> your
 integration. Has to be done per database, Notion doesn't inherit this
 from the parent page.
 
-**3. Find your data source IDs.**
+**3. Run the guided setup.**
 ```bash
 npm install
-npm run find-ids -- <link to your Home page>
+npm run setup
 ```
-Prints a ready-to-paste `.env` block. This exists because hunting these
-down by hand through the raw API is genuinely annoying, don't do that.
+It asks a few plain-English questions - paste your Notion secret, paste
+a link to your Home page, choose whether you want email/text alerts -
+checks each answer as you go, finds all the database IDs itself, and
+writes the settings file for you. Nothing to edit by hand. Re-run it
+any time to change an answer; run `npm run doctor` any time to get a
+plain-English report of what's working and what isn't.
 
-**4. Set your secrets.**
-Copy `.env.example` to `.env` for local testing, or add each name
-straight to GitHub (repo -> Settings -> Secrets and variables -> Actions).
-Email/SMS vars are optional - leave blank and the scripts just log to
-console instead of sending anything.
+(Prefer doing it manually? `npm run find-ids -- <Home page link>`
+prints a ready-to-paste `.env` block, and `.env.example` documents
+every setting. Email/SMS vars are optional - leave blank and the
+scripts just log to console instead of sending anything.)
+
+**4. Copy the same settings into GitHub** so the daily checks can run
+without your computer on. Repo -> Settings -> Secrets and variables ->
+Actions -> New repository secret, one per name in your `.env` (the end
+of `npm run setup` prints the exact list).
 
 **5. Turn on the daily checks.**
 `.github/workflows/daily-checks.yml` runs automatically once secrets are
@@ -82,7 +90,8 @@ Typeform, or a plain form at that, with header
 
 **7. Test it.**
 ```bash
-npm test          # offline logic tests, should say 24 passed + 6 passed
+npm run doctor     # plain-English health check of the whole setup
+npm test           # offline logic tests, should say 24 passed + 6 passed
 npm run soa-check  # a real check against your actual Notion data
 ```
 

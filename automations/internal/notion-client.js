@@ -12,6 +12,13 @@ const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 // Queries a full data source, paging through results automatically.
 async function queryAll(dataSourceId, { filter, sorts } = {}) {
+  if (!process.env.NOTION_API_KEY || !dataSourceId) {
+    throw new Error(
+      "Setup isn't finished - a Notion key or database ID is missing. " +
+        "Run `npm run setup` to fill it in, or `npm run doctor` to see " +
+        "exactly what's missing."
+    );
+  }
   const results = [];
   let cursor = undefined;
   do {
