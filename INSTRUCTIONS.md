@@ -63,11 +63,17 @@ same way, then run setup again.)
 **The browser way (recommended - no terminal, nothing to install).**
 Everything happens on github.com; a phone browser works fine:
 
-1. Put the code on your own GitHub (free account is fine). Unzip
-   `medicare-crm-automations.zip` first, then: github.com -> + (top
-   right) -> New repository -> name it anything, keep it Private ->
-   Create. On the new repo's page, click "uploading an existing file"
-   and drag in everything from the unzipped folder -> Commit changes.
+1. Get your own copy on GitHub (free account is fine). Open the
+   template at
+   https://github.com/itadan2-lgtm/medicare-crm-automations -> click
+   the green "Use this template" -> Create a new repository -> name it
+   anything, keep it Private -> Create. That copies everything in one
+   click, no download needed.
+   (No button, or prefer to add the files by hand? Unzip
+   `medicare-crm-automations.zip`, make a new private repo, and upload
+   the files yourself - be sure to include the hidden `.github` folder;
+   reveal hidden files first on Mac with Cmd+Shift+period, on Windows
+   via File Explorer -> View -> Show -> Hidden items.)
 2. Add your Notion secret to GitHub, once: repo -> Settings -> Secrets
    and variables -> Actions -> New repository secret. Name it
    `NOTION_API_KEY`, paste the secret from step 2 as the value.

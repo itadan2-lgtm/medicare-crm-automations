@@ -147,6 +147,20 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; background: var(--sage-bg);
     color: var(--sage-ink); padding: 1px 5px; border-radius: 4px;
   }
+  a.cta-link {
+    display: inline-block; background: var(--sage); color: #fff; font-weight: 700; font-size: 14.5px;
+    text-decoration: none; padding: 12px 22px; border-radius: 8px; margin: 6px 0 8px;
+  }
+  a.cta-link:hover { filter: brightness(1.06); }
+  details.fallback { margin-top: 12px; font-size: 13.5px; }
+  details.fallback summary {
+    cursor: pointer; font-weight: 600; color: var(--brass-ink); font-size: 13.5px;
+  }
+  details.fallback .fb-body { margin-top: 9px; line-height: 1.55; color: var(--slate); }
+  details.fallback code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: var(--sage-bg);
+    color: var(--sage-ink); padding: 1px 5px; border-radius: 4px;
+  }
 
   /* ---------- Mockup: browser window ---------- */
   .mockup {
@@ -384,29 +398,26 @@
     <div class="step">
       <div class="rail"><div class="step-num">3</div></div>
       <div class="step-body">
-        <div class="step-title">Put the code on your own GitHub</div>
-        <div class="step-text">First <b>unzip</b> <code>medicare-crm-automations.zip</code> on your computer. Then sign in at <code>github.com</code> (a free account is fine) and make a home for it:</div>
-        <ol class="mini-steps">
-          <li>Click <b>+</b> (top-right) → <b>New repository</b></li>
-          <li>Name it anything (e.g. <code>my-crm</code>), keep it <b>Private</b>, click <b>Create repository</b></li>
-          <li>On the new repo's page, click <b>uploading an existing file</b></li>
-          <li>Drag in <b>everything from the unzipped folder</b> (see the note below), then <b>Commit changes</b></li>
-        </ol>
+        <div class="step-title">Get your own copy on GitHub</div>
+        <div class="step-text">Sign in at <code>github.com</code> (a free account is fine). Then click the button below — on the page that opens, click the green <b>Use this template → Create a new repository</b>, name it anything, keep it <b>Private</b>, and click <b>Create repository</b>. That copies the whole system into your account in <b>one click</b> — nothing to download or unzip.</div>
 
-        <div class="callout warn">
-          <b>Don't miss the hidden folder.</b> The unzipped folder contains one called <code>.github</code> that starts with a dot — Mac and Windows hide these by default, and <b>without it the setup won't appear in step 5</b>. Turn on hidden files first: <b>Mac</b> → press <b>Cmd + Shift + .</b> (period) inside the folder; <b>Windows</b> → File Explorer <b>View → Show → Hidden items</b>. Then select <b>everything</b>, including <code>.github</code>, and drag it in.
-        </div>
+        <a class="cta-link" href="https://github.com/itadan2-lgtm/medicare-crm-automations" target="_blank" rel="noopener">Open the template on GitHub →</a>
 
         <div class="mockup">
-          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/my-crm</div></div>
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/itadan2-lgtm/medicare-crm-automations</div></div>
           <div class="mockup-body">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="color:var(--slate); font-family:'IBM Plex Mono',monospace; font-size:12px;">Drag files here to add them to your repository</span>
-              <span class="btn-mock">Commit changes</span>
+              <span style="font-weight:600; color:var(--ink);">medicare-crm-automations</span>
+              <span class="btn-mock" style="background:var(--sage);">Use this template ▾</span>
             </div>
           </div>
         </div>
-        <p class="mockup-caption">Uploading the files is a one-time thing. GitHub keeps them safe, and the daily automation runs from here — free, on your own account.</p>
+        <p class="mockup-caption">One click copies everything — including the behind-the-scenes files that make the daily checks run. The automation lives here, free, on your own account.</p>
+
+        <details class="fallback">
+          <summary>No “Use this template” button, or prefer to add the files by hand?</summary>
+          <div class="fb-body">Unzip <code>medicare-crm-automations.zip</code> from your download. On github.com click <b>+ → New repository</b> (keep it Private) → on the new repo's page click <b>uploading an existing file</b> → drag in <b>everything</b> from the unzipped folder → <b>Commit changes</b>.<br><br><b>Important:</b> that folder includes a hidden <code>.github</code> folder — Mac and Windows hide it, so reveal hidden files first (<b>Mac:</b> press <b>Cmd + Shift + .</b> in the folder; <b>Windows:</b> File Explorer → <b>View → Show → Hidden items</b>) and make sure <code>.github</code> is included, or step 5 won't appear.</div>
+        </details>
       </div>
     </div>
 
