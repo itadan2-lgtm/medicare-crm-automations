@@ -461,9 +461,17 @@
     <div class="step">
       <div class="rail"><div class="step-num">6</div></div>
       <div class="step-body">
-        <div class="step-title">Add alerts &amp; auto-import <span class="step-optional">optional</span></div>
-        <div class="step-text"><b>Email or text alerts:</b> add more secrets on the same screen as step 4 — <code>SENDGRID_API_KEY</code>, <code>ALERT_EMAIL_TO</code>, <code>ALERT_EMAIL_FROM</code> for email (SendGrid's free tier is plenty), or <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_FROM_NUMBER</code>, <code>ALERT_SMS_TO</code> for texts (Twilio charges a few cents per text). Skip this and results simply stay in each morning's run log.</div>
-        <div class="step-text"><b>Auto-import leads from a web form:</b> deploy the included webhook to Vercel (free):</div>
+        <div class="step-title">Turn on email alerts <span class="step-optional">optional · free · recommended</span></div>
+        <div class="step-text">This sends the morning digest and any compliance flags straight to your inbox, so you never have to open GitHub to check. It's free through <b>SendGrid</b> (their free tier covers 100 emails a day — far more than you'll use). Here's how to get the key:</div>
+        <ol class="mini-steps">
+          <li>Sign up free at <code>sendgrid.com</code></li>
+          <li>Verify your sender: <b>Settings → Sender Authentication → Verify a Single Sender</b> — use your own email address and confirm the email they send you</li>
+          <li>Create the key: <b>Settings → API Keys → Create API Key</b> → choose <b>Full Access</b> → <b>Create</b> → <b>copy it right away</b> (SendGrid shows it only once)</li>
+          <li>Add three secrets in GitHub (same screen as step 4): <code>SENDGRID_API_KEY</code> = the key you copied · <code>ALERT_EMAIL_TO</code> = where alerts should go · <code>ALERT_EMAIL_FROM</code> = the address you just verified</li>
+        </ol>
+        <p class="mockup-caption">Prefer texts? Twilio sends SMS for a few cents each (not free). In the <b>Twilio Console</b>, copy your <b>Account SID</b> and <b>Auth Token</b> from the dashboard and buy a phone number under <b>Phone Numbers</b>, then add <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_FROM_NUMBER</code>, and <code>ALERT_SMS_TO</code> as secrets. Otherwise skip it — email is plenty.</p>
+
+        <div class="step-text" style="margin-top:22px;"><b>Auto-import leads from a web form</b> <span class="step-optional">advanced · optional</span> — makes new form submissions appear in your CRM by themselves. Deploy the included webhook to Vercel (free):</div>
 
         <div class="mockup">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">vercel.com/new</div></div>

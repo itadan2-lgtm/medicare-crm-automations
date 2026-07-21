@@ -103,13 +103,27 @@ doctor` reports the health of the whole setup any time. The fully
 manual route (`npm run find-ids`, hand-edit `.env` per `.env.example`)
 still works too.
 
-**4. Want email or text alerts?** Add these as additional GitHub
-secrets, same screen as `NOTION_API_KEY`: `SENDGRID_API_KEY`,
-`ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` for email (SendGrid free tier is
-plenty); `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`,
-`TWILIO_FROM_NUMBER`, `ALERT_SMS_TO` for texts (Twilio charges a few
-cents per text - the only thing here that isn't free). Skip this and
-results just stay in each run's log.
+**4. Turn on email alerts (optional, free, recommended).** This sends
+the morning digest and compliance flags to your inbox so you never
+have to open GitHub to check. It's free through SendGrid. To get the
+key:
+
+  1. Sign up free at sendgrid.com (free tier = 100 emails/day, plenty).
+  2. Verify your sender: Settings -> Sender Authentication -> Verify a
+     Single Sender -> use your own email and confirm their email.
+  3. Create the key: Settings -> API Keys -> Create API Key -> Full
+     Access -> Create -> copy it right away (shown only once).
+  4. Add three GitHub secrets (same screen as `NOTION_API_KEY`):
+     `SENDGRID_API_KEY` = the key, `ALERT_EMAIL_TO` = where alerts go,
+     `ALERT_EMAIL_FROM` = the address you just verified.
+
+Skip this and results just stay in each run's log.
+
+*Prefer texts?* Twilio sends SMS for a few cents each (not free). From
+the Twilio Console, copy your Account SID and Auth Token from the
+dashboard and buy a phone number under Phone Numbers, then add
+`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, and
+`ALERT_SMS_TO` as secrets. Otherwise skip it - email is plenty.
 
 **5. Turn on the daily checks.**
 `.github/workflows/daily-checks.yml` runs automatically once secrets are
