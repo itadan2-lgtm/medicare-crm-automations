@@ -115,8 +115,11 @@ async function stepFindIds(notionKey, existing) {
   say("Open your CRM's Home page in Notion, click Share -> Copy link,");
   say("and paste that link here. Before that works, the Home page has to");
   say("be connected to your integration: on the Home page click the •••");
-  say('menu (top right) -> "Connect to" -> pick your integration.');
-  say("(Connected it just now? Notion can take a minute to catch up.)");
+  say('menu (top right) -> "Connections" -> "Add connections" -> pick');
+  say("your integration. (Notion renamed this from \"Connect to\"; the");
+  say("list is empty until you type the name. Not showing up at all? The");
+  say("integration is probably in a different workspace than your CRM -");
+  say("they have to match.)");
   say("");
 
   for (;;) {
@@ -134,8 +137,9 @@ async function stepFindIds(notionKey, existing) {
     } catch (err) {
       say("\nNotion wouldn't show me that page. Almost always this means the");
       say("integration isn't connected yet: on the Home page, click the •••");
-      say('menu -> "Connect to" -> pick your integration. Then paste the');
-      say("link again.\n");
+      say('menu -> "Connections" -> "Add connections" -> pick your');
+      say("integration (was called \"Connect to\"). Then paste the link");
+      say("again.\n");
       continue;
     }
 
@@ -156,7 +160,8 @@ async function stepFindIds(notionKey, existing) {
     say("");
     say("Connecting the Home page usually covers everything inside it, but");
     say("these didn't pick it up. Open each missing one in Notion, click");
-    say('its ••• menu -> "Connect to" -> your integration.');
+    say('its ••• menu -> "Connections" -> "Add connections" -> your');
+    say("integration.");
     say("");
     const keepGoing = missing.length < 7 && (await askYesNo("Continue with just these for now? (You can re-run setup later.)"));
     if (keepGoing) {

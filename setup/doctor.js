@@ -76,8 +76,8 @@ async function main() {
       ok(`Can read "${title}".`);
     } catch (err) {
       bad(`Can't read "${title}".`);
-      note(`In Notion, open that database, click its ••• menu -> "Connect`);
-      note(`to" -> your integration. Then run this check again.`);
+      note(`In Notion, open that database, click its ••• menu -> "Connections"`);
+      note(`-> "Add connections" -> your integration. Then run this check again.`);
       problems++;
     }
   }

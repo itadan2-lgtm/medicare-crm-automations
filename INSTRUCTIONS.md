@@ -45,9 +45,15 @@ The webhook's different - it has to be listening the second someone submits your
 refers to your copy - your IDs will be different from any screenshots.
 
 **2. Create a Notion integration.**
-Go to notion.so/my-integrations -> New integration. Name it whatever.
-Copy the secret it gives you. Then connect it to your CRM, once: open
-your Home page, ••• menu -> Connect to -> your integration. The
+Go to notion.so/my-integrations -> New integration. **Pick the same
+workspace your CRM is in** (if you have more than one, this is the #1
+thing people get wrong - the integration won't show up later
+otherwise). Name it whatever, and copy the secret it gives you.
+
+Then connect it to your CRM, once: open your Home page, ••• menu ->
+**Connections** -> **Add connections** -> pick your integration.
+(Notion used to call this "Connect to"; it's now "Connections." Start
+typing your integration's name - the list is empty until you do.) The
 databases inside the Home page come along with it. (If setup later
 reports one as missing, open just that database and connect it the
 same way, then run setup again.)

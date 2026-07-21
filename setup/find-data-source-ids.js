@@ -30,7 +30,7 @@ async function main() {
   const found = await findDataSources(notion, pageId);
 
   if (Object.keys(found).length === 0) {
-    console.error("No databases found on that page. Did you connect your integration to it (••• menu > Connect to)?");
+    console.error("No databases found on that page. Did you connect your integration to it (••• menu > Connections > Add connections)? It also must be in the same workspace as your CRM.");
     process.exit(1);
   }
 

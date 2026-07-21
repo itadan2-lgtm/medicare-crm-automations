@@ -332,7 +332,7 @@
       <div class="rail"><div class="step-num">2</div></div>
       <div class="step-body">
         <div class="step-title">Create a Notion integration</div>
-        <div class="step-text">Go to <code>notion.so/my-integrations</code> → New integration. Name it anything. Copy the secret it gives you — that's your <code>NOTION_API_KEY</code>.</div>
+        <div class="step-text">Go to <code>notion.so/my-integrations</code> → New integration. <b>Pick the same workspace your CRM is in</b> (if you have more than one — this is the #1 thing people get wrong). Name it anything. Copy the secret it gives you — that's your <code>NOTION_API_KEY</code>.</div>
 
         <div class="mockup">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">notion.so/my-integrations</div></div>
@@ -348,20 +348,20 @@
         </div>
         <p class="mockup-caption">Illustrative — Notion's actual page may look slightly different.</p>
 
-        <div class="step-text" style="margin-top:16px;">Then connect it to your CRM, <b>once</b>: open your <b>Home</b> page in Notion, click the <b>•••</b> menu (top right) → <b>Connect to</b> → pick your integration. The databases inside the Home page come along with it.</div>
+        <div class="step-text" style="margin-top:16px;">Then connect it to your CRM, <b>once</b>: open your <b>Home</b> page in Notion, click the <b>•••</b> menu (top right) → <b>Connections</b> → <b>Add connections</b> → pick your integration. <span style="color:var(--slate);">(Notion used to label this "Connect to" — it's now "Connections." The list looks empty until you start typing your integration's name.)</span> The databases inside the Home page come along with it.</div>
 
-        <div class="mockup" style="max-width:260px;">
+        <div class="mockup" style="max-width:280px;">
           <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">•••</div></div>
           <div class="mockup-body">
             <div class="menu-mock">
               <div class="menu-item">Duplicate</div>
-              <div class="menu-item hl">Connect to ›</div>
               <div class="menu-item">Export</div>
+              <div class="menu-item hl">Connections ›</div>
               <div class="menu-item">Delete</div>
             </div>
           </div>
         </div>
-        <p class="mockup-caption">If step 5 later reports a database as missing, open just that one and connect it the same way — then run step 5 again.</p>
+        <p class="mockup-caption">Can't find your integration in the list? It's almost always because it was created in a <b>different workspace</b> than your CRM — the two must match. If step 5 later reports a database missing, open just that one and add the connection the same way.</p>
       </div>
     </div>
 

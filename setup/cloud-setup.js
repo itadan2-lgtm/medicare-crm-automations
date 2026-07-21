@@ -90,8 +90,10 @@ async function main() {
       report("### ❌ Notion wouldn't show me that page");
       report(
         "Almost always this means the page isn't connected to your integration yet. " +
-          "On the Home page in Notion, click the **•••** menu (top right) → **Connect to** → " +
-          "pick your integration. Then run this workflow again."
+          "On the Home page in Notion, click the **•••** menu (top right) → **Connections** → " +
+          "**Add connections** → pick your integration (Notion renamed this from \"Connect to\"). " +
+          "If it's not in the list, it was made in a different workspace than your CRM — they " +
+          "must match. Then run this workflow again."
       );
       process.exitCode = 1;
       return;
@@ -127,10 +129,14 @@ async function main() {
   } else if (missing.length === 7 && !link) {
     report("### ⚠️ Couldn't see any of your databases yet");
     report(
-      "Two easy explanations:\n" +
+      "Three easy explanations:\n" +
         "1. **The integration isn't connected yet.** In Notion, open your CRM's **Home** page, " +
-        "click the **•••** menu (top right) → **Connect to** → pick your integration.\n" +
-        "2. **You connected it seconds ago.** Notion can take a minute to catch up - just run " +
+        "click the **•••** menu (top right) → **Connections** → **Add connections** → pick your " +
+        "integration (Notion renamed this from \"Connect to\").\n" +
+        "2. **The integration is in a different workspace than your CRM.** They must be in the " +
+        "same workspace, or it won't appear. Re-make it from notion.so/my-integrations in the " +
+        "right workspace if needed.\n" +
+        "3. **You connected it seconds ago.** Notion can take a minute to catch up - just run " +
         "this workflow again shortly.\n\n" +
         "Still stuck? Run the workflow again and paste the link to your Home page " +
         "(Share → Copy link in Notion) into the box - that looks the page up directly."
@@ -150,7 +156,7 @@ async function main() {
       report(
         "Connecting the Home page usually covers everything inside it, but these didn't pick " +
           "it up. In Notion, open each missing database, click its **•••** menu → " +
-          "**Connect to** → your integration. Then run this workflow again - " +
+          "**Connections** → **Add connections** → your integration. Then run this workflow again - " +
           "what was already found is saved."
       );
     }
