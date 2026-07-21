@@ -2,6 +2,8 @@
 
 **Prefer pictures?** Open `Setup-Guide.html` in this same folder — same steps, illustrated. This file is the plain-text version, easier to search and copy commands from.
 
+**Already set up and wondering how to use it day to day?** Open `How-To-Use-Guide.html` — the everyday workflow: leads, appointments, SOAs, policies, and what every status color means. (The same guide also lives inside the Notion template, at the top of the Home page.)
+
 Five scripts that turn the Notion CRM from "a place to store data" into
 something that actually watches deadlines and compliance for you. They
 run on your own free-tier accounts, nothing here needs paid hosting.
