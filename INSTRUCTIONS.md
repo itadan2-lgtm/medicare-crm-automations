@@ -63,11 +63,11 @@ same way, then run setup again.)
 **The browser way (recommended - no terminal, nothing to install).**
 Everything happens on github.com; a phone browser works fine:
 
-1. Get your own copy of this project on GitHub (free account is fine).
-   Given a template link? Open it -> Use this template -> Create a new
-   repository (keep it Private). Given a zip? github.com -> + -> New
-   repository (private) -> "uploading an existing file" -> drag in
-   everything from the unzipped folder.
+1. Put the code on your own GitHub (free account is fine). Unzip
+   `medicare-crm-automations.zip` first, then: github.com -> + (top
+   right) -> New repository -> name it anything, keep it Private ->
+   Create. On the new repo's page, click "uploading an existing file"
+   and drag in everything from the unzipped folder -> Commit changes.
 2. Add your Notion secret to GitHub, once: repo -> Settings -> Secrets
    and variables -> Actions -> New repository secret. Name it
    `NOTION_API_KEY`, paste the secret from step 2 as the value.

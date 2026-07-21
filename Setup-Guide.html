@@ -132,6 +132,21 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: var(--sage-bg);
     color: var(--sage-ink); padding: 2px 6px; border-radius: 4px;
   }
+  ol.mini-steps { margin: 4px 0 16px; padding-left: 0; list-style: none; counter-reset: ms; }
+  ol.mini-steps li {
+    counter-increment: ms; position: relative; padding: 7px 0 7px 34px; font-size: 15px;
+    color: var(--ink); border-bottom: 1px solid var(--line);
+  }
+  ol.mini-steps li:last-child { border-bottom: none; }
+  ol.mini-steps li::before {
+    content: counter(ms); position: absolute; left: 0; top: 6px;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: var(--brass-light);
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; display: flex; align-items: center; justify-content: center;
+  }
+  ol.mini-steps code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; background: var(--sage-bg);
+    color: var(--sage-ink); padding: 1px 5px; border-radius: 4px;
+  }
 
   /* ---------- Mockup: browser window ---------- */
   .mockup {
@@ -369,19 +384,25 @@
     <div class="step">
       <div class="rail"><div class="step-num">3</div></div>
       <div class="step-body">
-        <div class="step-title">Get your own copy on GitHub</div>
-        <div class="step-text">Sign in at <code>github.com</code> (a free account is fine). If you were given a template link, open it and click <b>Use this template → Create a new repository</b>. Name it anything, keep it <b>Private</b>, and click <b>Create repository</b>.</div>
+        <div class="step-title">Put the code on your own GitHub</div>
+        <div class="step-text">First <b>unzip</b> <code>medicare-crm-automations.zip</code> on your computer. Then sign in at <code>github.com</code> (a free account is fine) and make a home for it:</div>
+        <ol class="mini-steps">
+          <li>Click <b>+</b> (top-right) → <b>New repository</b></li>
+          <li>Name it anything (e.g. <code>my-crm</code>), keep it <b>Private</b>, click <b>Create repository</b></li>
+          <li>On the new repo's page, click <b>uploading an existing file</b></li>
+          <li>Drag in <b>everything from the unzipped folder</b>, then <b>Commit changes</b></li>
+        </ol>
 
         <div class="mockup">
-          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/…/medicare-crm-automations</div></div>
+          <div class="mockup-bar"><div class="dot r"></div><div class="dot a"></div><div class="dot s"></div><div class="mockup-url">github.com/you/my-crm</div></div>
           <div class="mockup-body">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-weight:600; color:var(--ink);">medicare-crm-automations</span>
-              <span class="btn-mock" style="background:var(--sage);">Use this template ▾</span>
+              <span style="color:var(--slate); font-family:'IBM Plex Mono',monospace; font-size:12px;">Drag files here to add them to your repository</span>
+              <span class="btn-mock">Commit changes</span>
             </div>
           </div>
         </div>
-        <p class="mockup-caption">Got a zip file instead of a link? On github.com: <b>+ → New repository</b> (private) → on the new repo's page choose <b>uploading an existing file</b> and drag in everything from the unzipped folder.</p>
+        <p class="mockup-caption">Uploading the files is a one-time thing. GitHub keeps them safe, and the daily automation runs from here — free, on your own account.</p>
       </div>
     </div>
 
