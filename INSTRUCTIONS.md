@@ -117,6 +117,20 @@ key:
      `SENDGRID_API_KEY` = the key, `ALERT_EMAIL_TO` = where alerts go,
      `ALERT_EMAIL_FROM` = the address you just verified.
 
+> **The first alert almost always lands in your Spam folder - this is
+> normal.** Because SendGrid sends "from" your everyday email address
+> (like a Gmail one) but through its own servers, your inbox can't verify
+> it the first time and quietly files it under Spam. It is NOT lost.
+> Do this once and it's fixed forever:
+>   1. Open your Spam/Junk folder and find the "Medicare CRM" email.
+>   2. Mark it **Not spam** (Gmail: the "Not spam" button at the top).
+>   3. Make future ones skip spam - in Gmail: Settings -> Filters and
+>      Blocked Addresses -> Create a new filter -> Subject: `Medicare CRM`
+>      -> Create filter -> tick **"Never send it to Spam"** -> Create
+>      filter. (Other inboxes: add the sender to your contacts / safe
+>      senders.)
+> After that, every morning's alert goes straight to your inbox.
+
 Skip this and results just stay in each run's log.
 
 *Prefer texts?* Twilio sends SMS for a few cents each (not free). From

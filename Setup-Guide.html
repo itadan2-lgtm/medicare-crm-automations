@@ -470,6 +470,16 @@
           <li>Create the key: <b>Settings → API Keys → Create API Key</b> → choose <b>Full Access</b> → <b>Create</b> → <b>copy it right away</b> (SendGrid shows it only once)</li>
           <li>Add three secrets in GitHub (same screen as step 4): <code>SENDGRID_API_KEY</code> = the key you copied · <code>ALERT_EMAIL_TO</code> = where alerts should go · <code>ALERT_EMAIL_FROM</code> = the address you just verified</li>
         </ol>
+        <div class="callout calm">
+          <b>📩 Heads up — your first alert will almost certainly land in Spam. That's normal, not a mistake.</b>
+          Because SendGrid sends "from" your everyday email address (like a Gmail one) but through its own servers, your inbox can't verify it the first time and files it under Spam. The email is <b>not</b> lost. Fix it once and it's solved forever:
+          <ol class="mini-steps" style="margin-top:12px;">
+            <li>Open your <b>Spam / Junk</b> folder and find the <b>"Medicare CRM"</b> email</li>
+            <li>Mark it <b>Not spam</b> (in Gmail, the button at the top of the email)</li>
+            <li>Make future ones skip spam — in Gmail: <b>Settings → Filters and Blocked Addresses → Create a new filter</b> → in <b>Subject</b> type <code>Medicare CRM</code> → <b>Create filter</b> → tick <b>"Never send it to Spam"</b> → <b>Create filter</b>. <span style="color:var(--slate)">(Other inboxes: add the sender to your contacts / safe-senders list.)</span></li>
+          </ol>
+          After that, every morning's alert goes straight to your inbox.
+        </div>
         <p class="mockup-caption">Prefer texts? Twilio sends SMS for a few cents each (not free). In the <b>Twilio Console</b>, copy your <b>Account SID</b> and <b>Auth Token</b> from the dashboard and buy a phone number under <b>Phone Numbers</b>, then add <code>TWILIO_ACCOUNT_SID</code>, <code>TWILIO_AUTH_TOKEN</code>, <code>TWILIO_FROM_NUMBER</code>, and <code>ALERT_SMS_TO</code> as secrets. Otherwise skip it — email is plenty.</p>
 
         <div class="step-text" style="margin-top:22px;"><b>Auto-import leads from a web form</b> <span class="step-optional">advanced · optional</span> — makes new form submissions appear in your CRM by themselves. Deploy the included webhook to Vercel (free):</div>
