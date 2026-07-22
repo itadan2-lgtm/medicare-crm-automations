@@ -13,8 +13,24 @@ const enrollmentDeadlines = require("./enrollment-deadlines");
 const chargebackTracker = require("./chargeback-tracker");
 const t65Tagger = require("./t65-tagger");
 const { sendAlert } = require("./internal/notify");
+const cfg = require("./internal/config");
 
 async function run() {
+  // If setup isn't finished, don't fail the scheduled run - just skip
+  // cleanly. Otherwise a brand-new copy would email "workflow failed"
+  // every morning until the buyer connects everything, which is alarming.
+  const ds = cfg.DATA_SOURCES;
+  const ready = process.env.NOTION_API_KEY && (ds.CLIENTS || ds.APPOINTMENTS || ds.POLICIES || ds.SOA_RECORDS);
+  if (!ready) {
+    console.log(
+      "Setup isn't finished yet - no Notion key or database IDs found.\n" +
+        "Run the 'One-time setup' workflow (Actions tab) to connect your CRM,\n" +
+        "then the daily checks will start working. Skipping today - this is\n" +
+        "not a failure, just nothing to check yet."
+    );
+    return; // exit 0 on purpose
+  }
+
   const results = [];
   const scripts = [soaCompliance, enrollmentDeadlines, chargebackTracker, t65Tagger];
 
