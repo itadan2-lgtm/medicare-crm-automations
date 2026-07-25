@@ -1,0 +1,24 @@
+# Single lint config for every Python component: backend, agents, browser_agent,
+# vector_memory. Kept at the root so `make lint` and CI see the same rules as an
+# editor opening any one subdirectory.
+
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "UP", "B", "S", "ASYNC", "SIM"]
+ignore = [
+    "B008",   # FastAPI's Depends() in argument defaults is the documented idiom.
+    "S101",   # assert is used deliberately for internal invariants.
+]
+
+[lint.per-file-ignores]
+"backend/tests/*" = ["S101", "S105", "S106"]  # fixtures use obvious fake secrets
+
+[lint.isort]
+# All four packages are ours. Without this, `app` looks third-party from outside
+# backend/ and imports get shuffled depending on which directory ruff runs from.
+known-first-party = ["app", "agents", "browser_agent", "vector_memory"]
+
+[format]
+quote-style = "double"

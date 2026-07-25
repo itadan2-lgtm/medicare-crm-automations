@@ -1,0 +1,120 @@
+# One deployment per agent type. Claiming uses SELECT ... FOR UPDATE SKIP LOCKED,
+# so replicas within an agent type are safe to scale freely.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-research
+  namespace: aibo
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: worker, agent: research }
+  template:
+    metadata:
+      labels: { app: worker, agent: research }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: worker
+          image: aibo/worker:latest
+          args: ['python', '-m', 'agents.worker', '--agent', 'research_agent']
+          envFrom:
+            - configMapRef: { name: aibo-config }
+            - secretRef: { name: aibo-secrets }
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: 1000m, memory: 1Gi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ['ALL'] }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-content
+  namespace: aibo
+spec:
+  # Copy, product, branding and email all run from the same image; in practice
+  # give each its own deployment so one agent's backlog cannot starve another.
+  replicas: 2
+  selector:
+    matchLabels: { app: worker, agent: copy }
+  template:
+    metadata:
+      labels: { app: worker, agent: copy }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: worker
+          image: aibo/worker:latest
+          args: ['python', '-m', 'agents.worker', '--agent', 'copy_agent']
+          envFrom:
+            - configMapRef: { name: aibo-config }
+            - secretRef: { name: aibo-secrets }
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: 1000m, memory: 1Gi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ['ALL'] }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browser-agent
+  namespace: aibo
+spec:
+  # Capped deliberately: browser traffic counts against the same systeme.io
+  # rate-limit budget as the API clients. Keep in step with MAX_BROWSER_SESSIONS.
+  replicas: 1
+  selector:
+    matchLabels: { app: browser-agent }
+  template:
+    metadata:
+      labels: { app: browser-agent }
+    spec:
+      containers:
+        - name: browser-agent
+          image: aibo/browser-agent:latest
+          envFrom:
+            - configMapRef: { name: aibo-config }
+            - secretRef: { name: aibo-secrets }
+          resources:
+            requests: { cpu: 500m, memory: 1Gi }
+            limits: { cpu: 2000m, memory: 2Gi }
+          volumeMounts:
+            - name: artifacts
+              mountPath: /app/artifacts
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ['ALL'] }
+      volumes:
+        - name: artifacts
+          emptyDir: {}
+---
+# The browser agent talks to systeme.io and the database, and nothing else. It is
+# the most exposed process in the system, so its egress is the most restricted.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: browser-agent-egress
+  namespace: aibo
+spec:
+  podSelector:
+    matchLabels: { app: browser-agent }
+  policyTypes: ['Egress']
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: { app: postgres }
+    - ports:
+        - port: 443
+          protocol: TCP
+        - port: 53
+          protocol: UDP

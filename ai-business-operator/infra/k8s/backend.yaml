@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aibo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aibo-secrets
+  namespace: aibo
+type: Opaque
+stringData:
+  # Placeholders. In a real cluster these come from a secrets manager (External
+  # Secrets, Vault agent, or cloud provider CSI driver) — never from a committed
+  # manifest. This file documents the keys, not the values.
+  JWT_SECRET: replace-me
+  ANTHROPIC_API_KEY: replace-me
+  SYSTEMEIO_API_KEY: replace-me
+  SYSTEMEIO_MCP_KEY: replace-me
+  DATABASE_URL: postgresql+asyncpg://aibo:replace-me@postgres:5432/aibo
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aibo-config
+  namespace: aibo
+data:
+  ENVIRONMENT: production
+  LOG_LEVEL: INFO
+  REDIS_URL: redis://redis:6379/0
+  REQUIRE_HUMAN_APPROVAL: 'true'
+  DRY_RUN: 'false'
+  MAX_BROWSER_SESSIONS: '2'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: aibo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: backend
+          image: aibo/backend:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: aibo-config
+            - secretRef:
+                name: aibo-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            # /ready checks the database; a failing pod leaves the service rather
+            # than restarting in a loop while Postgres recovers.
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ['ALL']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: aibo
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 80
+      targetPort: 8000

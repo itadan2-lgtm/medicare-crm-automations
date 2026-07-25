@@ -1,0 +1,101 @@
+name: aibo
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: aibo
+      POSTGRES_PASSWORD: aibo
+      POSTGRES_DB: aibo
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Runs once, on an empty data directory. `make migrate` re-applies it to a
+      # database that already exists.
+      - ./sql/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U aibo -d aibo']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://aibo:aibo@postgres:5432/aibo
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - '8000:8000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ..
+      dockerfile: agents/Dockerfile
+    command: ['python', '-m', 'agents.worker', '--agent', 'research_agent']
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://aibo:aibo@postgres:5432/aibo
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # One worker per agent in production; a single research worker is enough to
+    # see the pipeline move locally. Scale with:
+    #   docker compose up -d --scale worker=3
+
+  browser-agent:
+    build:
+      context: ..
+      dockerfile: browser_agent/Dockerfile
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://aibo:aibo@postgres:5432/aibo
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ../artifacts:/app/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Heavier than the other workers and the most exposed. Started explicitly:
+    #   docker compose --profile browser up -d
+    profiles: ['browser']
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    profiles: ['full']
+
+volumes:
+  postgres_data:
+  redis_data:
