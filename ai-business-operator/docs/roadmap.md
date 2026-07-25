@@ -9,27 +9,33 @@ Deliverable: the architecture specification, agent designs, DB schema, security 
 repository scaffold.
 **Accept**: design reviewed and signed off, no major gaps.
 
-## Phase 2 — Core backend & foundation (2–3 weeks) — 🚧 in progress
+## Phase 2 — Core backend & foundation (2–3 weeks) — ✅ complete
 
 - Repo and CI ✅
-- FastAPI skeleton with user/project auth ✅ (scaffolded)
+- FastAPI skeleton with user/project auth ✅
 - Postgres + Redis configured ✅
-- Schema and migrations — SQL init ✅, Alembic revisions ⬜
-- Basic dashboard: login, project list ✅ (scaffolded)
+- Schema and migrations — SQL init ✅, Alembic revisions ✅
+- Basic dashboard: login, project list ✅
 
-**Milestone**: user login, project creation.
-**Accept**: `docker compose up` runs backend + DB locally, tests pass.
+**Milestone**: user login, project creation. ✅
+**Accept**: `docker compose up` runs backend + DB locally, tests pass. ✅
 
-## Phase 3 — Agent framework & orchestration (2 weeks)
+## Phase 3 — Agent framework & orchestration (2 weeks) — ✅ complete
 
-- Task model and claim queue ✅ (scaffolded)
-- Orchestrator: goal → initial task graph 🚧 (rules in place, decomposition stubbed)
-- Claude API integration via `anthropic` ✅ (client scaffolded)
+- Task model and claim queue ✅ — `FOR UPDATE SKIP LOCKED`, dependency-gated,
+  proven under concurrency by integration test
+- Orchestrator: goal → task graph ✅ — CEO agent proposes, `services/planning.py`
+  validates against the registry, fixed template as fallback
+- Claude API integration via `anthropic` ✅
 - Base worker fetching tasks and invoking the LLM ✅
+- Tool provisioning ✅ — each agent receives exactly what the registry authorises
+- Long-term memory wired into the worker loop ✅ — recall before the prompt,
+  persist after a successful run
 - `CLAUDE.md` system prompts ✅
 
-**Milestone**: orchestrator spawns a task, an agent processes it.
-**Accept**: research agent returns a mock report for a sample query.
+**Milestone**: orchestrator spawns a task, an agent processes it. ✅
+**Accept**: research agent returns a report for a sample query. ✅ (real API key
+required; the path is covered end to end with a deterministic fake)
 
 ## Phase 4 — Core agents (3–4 weeks)
 
@@ -76,18 +82,30 @@ updates.
 
 ---
 
-## Scaffold status
+## Current status
 
-What exists here is structure, contracts, and wiring. Deliberately stubbed, each marked
-`TODO(phase-N)` in the source:
+Phases 1–3 are done. The orchestration core is real and tested: task claiming,
+dependency gating, output propagation, the approval gate, plan validation, tool
+provisioning, and memory recall/persistence all have coverage, with the
+database-dependent parts run against live Postgres and pgvector.
+
+Still stubbed, each marked `TODO(phase-N)` in the source:
 
 | Stub | Phase |
 |---|---|
-| Goal → task-graph decomposition (currently a fixed template) | 3 |
-| Per-agent prompt engineering and output parsing | 4 |
-| Web search tool for the research agent | 4 |
-| Vector memory retrieval tuning | 4 |
+| Per-agent prompt engineering and output-quality tuning | 4 |
+| Web search — provider is wired, needs a `SEARCH_API_KEY` and result tuning | 4 |
+| Vector memory retrieval tuning (IVFFlat lists, probes, top-k per category) | 4 |
 | systeme.io write paths beyond funnel/step/page creation | 5 |
-| Playwright page-editor scripts (skeletons only) | 5 |
+| Playwright selectors — written from documented UI copy, unverified against live | 5 |
 | Analytics metric computation | 6 |
-| Alembic migrations, Helm charts, Terraform | 2 / 7 |
+| Helm charts, Terraform | 7 |
+
+## What running it for real still needs
+
+- `ANTHROPIC_API_KEY` — without it, planning falls back to the fixed template and
+  agents cannot run at all.
+- `OPENAI_API_KEY` — without it, embeddings fall back to a hash stand-in whose
+  similarity results are meaningless. Storage and retrieval work; recall does not.
+- A throwaway systeme.io account, `DRY_RUN=false`, and a pass over the Playwright
+  selectors in `browser_agent/playwright_scripts/`.

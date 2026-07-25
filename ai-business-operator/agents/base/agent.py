@@ -64,6 +64,15 @@ class BaseAgent(ABC):
 
     # --- Tool access -------------------------------------------------------
 
+    def attach_tools(self, tools: dict[str, Any]) -> None:
+        """Replace the agent's toolset between tasks.
+
+        Workers are long-lived but tools are per-task — memory and database handles
+        are scoped to the project being worked on. Rebinding here keeps one agent
+        instance from carrying another project's session.
+        """
+        self._tools = tools
+
     def use_tool(self, name: str) -> Any:
         if name not in self.spec.allowed_tools:
             raise ToolNotPermitted(

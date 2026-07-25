@@ -8,6 +8,7 @@ decides what happens next. See CLAUDE.md rule 2.
 from __future__ import annotations
 
 import logging
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 
 from sqlalchemy import select, text
@@ -15,10 +16,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import HUMAN_APPROVAL_REQUIRED, get_settings
 from app.models import Task
-from app.schemas import EventType, TaskCreate, TaskResult, TaskStatus
+from app.schemas import EventType, ProjectPlan, TaskCreate, TaskResult, TaskStatus
 from app.services.events import EventBus
+from app.services.planning import (
+    AgentCapabilities,
+    PlanRejected,
+    to_launch_plan,
+    validate_plan,
+)
 
 log = logging.getLogger(__name__)
+
+#: Produces a candidate task graph from a goal. Supplied by the caller so the
+#: orchestrator stays free of any dependency on agent or LLM code.
+Planner = Callable[[str], Awaitable[ProjectPlan]]
 
 
 # The Phase 1 launch plan: a fixed dependency graph covering research → published
@@ -64,19 +75,55 @@ class Orchestrator:
 
     # --- Planning ----------------------------------------------------------
 
-    async def plan_project(self, project_id: int, goal: str) -> list[Task]:
+    async def plan_project(
+        self, project_id: int, goal: str, planner: Planner | None = None
+    ) -> list[Task]:
         """Create the initial task graph for a project.
 
-        Returns the created tasks in plan order. Dependencies are resolved to real
-        task ids after the flush, since they're only known once rows exist.
+        With a planner, the CEO agent proposes a graph and it is validated against
+        the agent registry before any row is written. Without one — or when the
+        proposal fails validation — the fixed LAUNCH_PLAN is used. Falling back is
+        the normal, expected path, not an error state: a standard launch is well
+        served by the template, and a plan that cannot be verified must not run.
+        """
+        plan = await self._resolve_plan(goal, planner)
+        return await self._materialise(project_id, goal, plan)
+
+    async def _resolve_plan(
+        self, goal: str, planner: Planner | None
+    ) -> list[tuple[str, str, list[int]]]:
+        if planner is None:
+            return LAUNCH_PLAN
+
+        try:
+            proposed = await planner(goal)
+            capabilities = AgentCapabilities.from_registry()
+            validated = validate_plan(proposed, capabilities)
+            log.info("plan.accepted", extra={"task_count": len(validated)})
+            return to_launch_plan(validated)
+        except PlanRejected as exc:
+            log.warning("plan.rejected", extra={"reason": str(exc)})
+        except Exception as exc:  # noqa: BLE001 - planning must never block a project
+            log.warning("plan.failed", extra={"error": f"{type(exc).__name__}: {exc}"[:300]})
+        return LAUNCH_PLAN
+
+    async def _materialise(
+        self, project_id: int, goal: str, plan: list[tuple[str, str, list[int]]]
+    ) -> list[Task]:
+        """Write a plan to the tasks table.
+
+        Dependencies are resolved to real task ids after the flush, since they're
+        only known once rows exist.
         """
         created: list[Task] = []
-        for task_type, agent, dep_indices in LAUNCH_PLAN:
+        for task_type, agent, dep_indices in plan:
             task = Task(
                 project_id=project_id,
                 task_type=task_type,
                 assigned_to=agent,
                 status=TaskStatus.PENDING.value,
+                # Root tasks carry the goal; the rest receive their context from
+                # upstream outputs via _propagate_outputs.
                 input={"goal": goal} if not dep_indices else {},
                 depends_on=[],
             )
@@ -85,7 +132,7 @@ class Orchestrator:
 
         await self.session.flush()  # assigns task_id
 
-        for task, (_, _, dep_indices) in zip(created, LAUNCH_PLAN, strict=True):
+        for task, (_, _, dep_indices) in zip(created, plan, strict=True):
             task.depends_on = [created[i].task_id for i in dep_indices]
 
         await self.session.flush()
@@ -147,7 +194,10 @@ class Orchestrator:
         if row is None:
             return None
 
-        task = await self.session.get(Task, row.task_id)
+        # populate_existing because the UPDATE above is raw SQL: without it the
+        # identity map would hand back a stale copy of a task this session has
+        # already loaded, with the previous claim's worker id still on it.
+        task = await self.session.get(Task, row.task_id, populate_existing=True)
         if task is None:
             return None
 

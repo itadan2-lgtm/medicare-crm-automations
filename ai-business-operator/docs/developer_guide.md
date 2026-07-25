@@ -12,8 +12,9 @@ cp .env.example .env
 # Leave DRY_RUN=true until you have a throwaway systeme.io account.
 
 make up          # postgres, redis, backend, one worker
-make migrate     # apply infra/sql/001_init.sql
-make test        # backend test suite
+make migrate     # alembic upgrade head
+make test        # unit tests
+make test-all    # unit + integration, against the compose database
 ```
 
 - API docs: <http://localhost:8000/docs>
@@ -45,12 +46,45 @@ gets you those alone.
 |---|---|
 | `make up` / `make down` | Start / stop the local stack |
 | `make logs` | Tail all service logs |
-| `make migrate` | Apply the schema to the running database |
-| `make test` | `pytest` for the backend and agents |
+| `make migrate` | `alembic upgrade head` |
+| `make migration M="add x"` | Autogenerate a revision from model changes |
+| `make migrate-down` | Roll back one revision |
+| `make test` | Unit tests (integration tests skip) |
+| `make test-all` | Everything, against the compose database |
 | `make lint` | `ruff check` + `mypy` |
 | `make fmt` | `ruff format` |
 | `make worker AGENT=copy_agent` | Run a single agent worker in the foreground |
 | `make psql` | Open a shell on the database |
+
+## Tests
+
+Unit tests need nothing. Integration tests need a real Postgres with pgvector and
+skip without `TEST_DATABASE_URL` — the orchestrator's claim query depends on
+`FOR UPDATE SKIP LOCKED` and array containment, and the memory store on pgvector's
+distance operators. A sqlite stand-in would only test the stand-in.
+
+```bash
+TEST_DATABASE_URL=postgresql+asyncpg://aibo:aibo@localhost:5432/aibo \
+  python -m pytest -q
+```
+
+Each integration test runs inside a transaction that is rolled back afterwards, so
+they share a schema without sharing state. The one exception is the concurrency
+test, which needs genuinely separate transactions and cleans up after itself.
+
+## Migrations
+
+`infra/sql/001_init.sql` remains the reference DDL and the compose init script;
+**Alembic is the authoritative path** for applying and changing the schema.
+
+```bash
+make migration M="add funnel_variants table"   # writes backend/migrations/versions/
+# review the generated revision — autogenerate misses constraints and indexes
+make migrate
+```
+
+Autogenerate ignores the `embedding` column: pgvector's type is unknown to Alembic,
+and without the exclusion every diff proposes dropping it.
 
 ## Adding an agent
 

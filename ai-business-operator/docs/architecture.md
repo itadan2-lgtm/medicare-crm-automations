@@ -85,6 +85,54 @@ Tasks are claimed with `SELECT ... FOR UPDATE SKIP LOCKED`, so multiple workers 
 agent type can run without double-processing. A task becomes claimable only when every id in
 its `depends_on` array has status `done`.
 
+## 3a. Planning: proposed, then verified
+
+The CEO agent proposes a task graph; `services/planning.py` decides whether it runs.
+Nothing trusts the proposal — a plan is a set of instructions the system executes
+autonomously, so it is validated as adversarial input.
+
+```mermaid
+flowchart LR
+    G[User goal] --> P[CEO agent]
+    P --> C{validate_plan}
+    C -->|passes| M[Materialise tasks]
+    C -->|rejected| T[Fixed LAUNCH_PLAN]
+    T --> M
+    M --> DB[(tasks)]
+```
+
+Rejected outright:
+
+- a task type no agent handles, or one assigned to the wrong agent — routing a
+  publish task to a content agent would run it outside the browser agent's
+  constrained environment;
+- forward or self dependencies (backwards-only makes cycles structurally
+  impossible, which is cheaper than detecting them);
+- a first task with dependencies, which could never start;
+- more than `MAX_TASKS` tasks;
+- **a task type that looks outward-facing but is not in `HUMAN_APPROVAL_REQUIRED`** —
+  the gate keys off task type, so a plan must not reach the outside world through a
+  type the gate does not cover.
+
+Rejection is not an error state. The orchestrator falls back to the fixed template,
+which is itself validated by the same rules in the test suite. Failing safe beats
+failing loudly when the alternative is a project that never starts.
+
+## 3b. Tools and memory around a task
+
+Agents declare tools in the registry; `agents/tools.py` builds exactly those and
+nothing more, and `BaseAgent.use_tool()` refuses anything outside the declared set.
+Two independent checks, because a mistake in provisioning should not silently widen
+what an agent can reach.
+
+Memory is handled by the worker rather than the agent: it recalls relevant records
+before `build_prompt` and persists the durable parts of the output afterwards. That
+keeps `build_prompt` a pure function of its input, which is what makes agents
+testable without a database. Recall spans projects by default — what converted for a
+previous funnel in the same niche is the reason long-term memory exists — and a
+memory failure never fails a task, since an agent without prior context is less
+informed, not broken.
+
 ## 4. End-to-end flow
 
 ```mermaid

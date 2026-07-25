@@ -22,6 +22,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
 from agents.base.llm import ClaudeLLM
 from agents.loader import load_agent
+from agents.memory_hooks import persist_output, recall_context
+from agents.tools import build_toolset, release_toolset
 from app.config import get_settings
 from app.database import dispose_engine, get_sessionmaker
 from app.logging_config import configure_logging
@@ -77,22 +79,46 @@ class Worker:
                 await session.commit()
                 return False
 
-            task_id, task_input = task.task_id, dict(task.input)
+            task_id = task.task_id
+            project_id = task.project_id
+            task_input = dict(task.input)
+            task_input.setdefault("task_type", task.task_type)
             await session.commit()
 
-        try:
-            output = await agent.run(task_input)
-            result = TaskResult(task_id=task_id, agent=self.agent_name, success=True, output=output)
-            self._recent_errors = 0
-        except Exception as exc:
-            log.exception("agent.failed", extra={"task_id": task_id, "agent": self.agent_name})
-            result = TaskResult(
-                task_id=task_id,
-                agent=self.agent_name,
-                success=False,
-                error=f"{type(exc).__name__}: {exc}"[:1000],
+        # Tools and memory share one session for the duration of the run. It is
+        # separate from the claim transaction so a long agent call is not holding a
+        # row lock while the model thinks.
+        async with sessionmaker() as tool_session:
+            tools = await build_toolset(
+                self.agent_name,
+                project_id=project_id,
+                session=tool_session,
+                settings=self.settings,
             )
-            self._recent_errors += 1
+            agent.attach_tools(tools)
+
+            try:
+                enriched = await recall_context(self.agent_name, task_input, tools)
+                output = await agent.run(enriched)
+                await persist_output(self.agent_name, output, tools)
+                await tool_session.commit()
+
+                result = TaskResult(
+                    task_id=task_id, agent=self.agent_name, success=True, output=output
+                )
+                self._recent_errors = 0
+            except Exception as exc:
+                await tool_session.rollback()
+                log.exception("agent.failed", extra={"task_id": task_id, "agent": self.agent_name})
+                result = TaskResult(
+                    task_id=task_id,
+                    agent=self.agent_name,
+                    success=False,
+                    error=f"{type(exc).__name__}: {exc}"[:1000],
+                )
+                self._recent_errors += 1
+            finally:
+                await release_toolset(tools)
 
         async with sessionmaker() as session:
             await Orchestrator(session, bus).complete_task(result)

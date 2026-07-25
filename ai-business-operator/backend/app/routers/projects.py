@@ -38,11 +38,27 @@ async def create_project(
 
     bus = EventBus.from_env()
     try:
-        await Orchestrator(session, bus).plan_project(project.project_id, project.goal)
+        await Orchestrator(session, bus).plan_project(
+            project.project_id, project.goal, planner=_planner()
+        )
     finally:
         await bus.aclose()
 
     return project
+
+
+def _planner():  # noqa: ANN202 - returns the optional Planner callable
+    """Build the CEO planner if agent code is importable and a key is configured.
+
+    The API can run without the agents package installed — a deployment that only
+    serves the dashboard has no reason to carry LLM dependencies. In that case
+    planning falls back to the fixed template.
+    """
+    try:
+        from agents.planner import build_planner
+    except ImportError:
+        return None
+    return build_planner()
 
 
 @router.get("", response_model=list[ProjectRead])

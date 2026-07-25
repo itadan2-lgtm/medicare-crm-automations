@@ -15,8 +15,14 @@ down: ## Stop the stack
 logs: ## Tail all service logs
 	$(COMPOSE) logs -f
 
-migrate: ## Apply the initial schema to the running database
-	$(COMPOSE) exec -T postgres psql -U aibo -d aibo < infra/sql/001_init.sql
+migrate: ## Apply migrations to the running database
+	cd backend && PYTHONPATH=.:.. alembic upgrade head
+
+migration: ## Generate a revision from model changes (make migration M="add x")
+	cd backend && PYTHONPATH=.:.. alembic revision --autogenerate -m "$(M)"
+
+migrate-down: ## Roll back one revision
+	cd backend && PYTHONPATH=.:.. alembic downgrade -1
 
 psql: ## Open a database shell
 	$(COMPOSE) exec postgres psql -U aibo -d aibo
@@ -24,8 +30,12 @@ psql: ## Open a database shell
 redis: ## Open a redis shell
 	$(COMPOSE) exec redis redis-cli
 
-test: ## Run the Python test suite
+test: ## Run unit tests (integration tests skip without TEST_DATABASE_URL)
 	cd backend && python -m pytest -q
+
+test-all: ## Run everything, including integration tests, against the compose database
+	cd backend && TEST_DATABASE_URL=postgresql+asyncpg://aibo:aibo@localhost:5432/aibo \
+		python -m pytest -q
 
 lint: ## Lint and type-check
 	ruff check backend agents browser_agent vector_memory

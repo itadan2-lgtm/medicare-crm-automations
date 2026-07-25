@@ -16,9 +16,12 @@ optimization.
    wrong — emit an event and let the orchestrator enqueue the dependent task.
 2. **The orchestrator is the only thing that creates tasks.** Agents return outputs and emit
    `task_completed`; they do not enqueue work for their peers.
-3. **Least privilege.** Every agent declares `allowed_tools` in `AGENTS.md`, enforced by
-   `BaseAgent`. The copy agent has no database write access. The browser agent has no LLM
-   billing keys beyond its own. Do not widen a toolset to make a test pass.
+3. **Least privilege, checked twice.** Every agent declares `allowed_tools` in `AGENTS.md`,
+   mirrored in `agents/registry.py`. `agents/tools.py` builds only those; `BaseAgent.use_tool()`
+   refuses anything else. Do not widen a toolset to make a test pass.
+3a. **An LLM-proposed plan is never executed unvalidated.** `services/planning.py` checks it
+   against the registry and the approval gate; a rejected plan falls back to `LAUNCH_PLAN`.
+   Do not add a path that skips `validate_plan`.
 4. **Secrets stay server-side.** systeme.io MCP/API keys load from the environment into the
    backend and browser-agent processes only. Nothing prefixed `NEXT_PUBLIC_` may contain a key.
 5. **Publishing and payments require a human.** Any task whose type is in
@@ -47,8 +50,12 @@ docs/              Architecture, developer guide, integration, security, roadmap
   Never log a key, token, password, or full prompt containing user data.
 - **Tests live beside their component** (`backend/tests/`, `agents/*/tests/`). Mock the LLM with
   a deterministic fake — never hit a real API in unit tests.
-- **Migrations**: `infra/sql/001_init.sql` is the source of truth for the initial schema. From
-  Phase 2 onward, changes go through Alembic revisions, not edits to that file.
+- **Migrations**: `infra/sql/001_init.sql` is the reference DDL and the compose init script.
+  Schema changes go through Alembic revisions (`make migration M="..."`), never edits to that
+  file. Review what autogenerate produces — it misses constraints and partial indexes.
+- **Integration tests need real Postgres.** They skip without `TEST_DATABASE_URL`. Do not
+  replace them with a sqlite stand-in: `SKIP LOCKED`, array containment, and pgvector distance
+  operators are exactly what they exist to check.
 
 ## Task and event contract
 

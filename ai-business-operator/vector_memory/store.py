@@ -130,8 +130,13 @@ class PgVectorStore:
                 WHERE embedding IS NOT NULL
                   AND embedding_model = :embedding_model
                   AND (expires_at IS NULL OR expires_at > NOW())
-                  AND (:category IS NULL OR category = :category)
-                  AND (:project_id IS NULL OR project_id = :project_id)
+                  -- The casts are required, not cosmetic: asyncpg cannot infer a
+                  -- parameter's type from a bare IS NULL and errors out without them.
+                  AND (CAST(:category AS text) IS NULL OR category = CAST(:category AS text))
+                  AND (
+                      CAST(:project_id AS integer) IS NULL
+                      OR project_id = CAST(:project_id AS integer)
+                  )
                 ORDER BY embedding <=> CAST(:embedding AS vector)
                 LIMIT :top_k
                 """

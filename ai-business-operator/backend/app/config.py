@@ -67,6 +67,12 @@ class Settings(BaseSettings):
     agent_error_window_seconds: int = 300
     worker_poll_interval_seconds: float = 2.0
 
+    # --- Tools ---
+    # Optional. Without it the research agent falls back to model knowledge and
+    # reports confidence 'low' rather than failing.
+    search_api_key: str = ""
+    artifact_dir: str = "./artifacts"
+
     # --- Memory ---
     memory_ttl_days: int = 365
     memory_top_k: int = 5

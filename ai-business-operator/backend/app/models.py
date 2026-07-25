@@ -36,7 +36,12 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    projects: Mapped[list[Project]] = relationship(back_populates="user")
+    # passive_deletes defers to the database's ON DELETE CASCADE. Without it
+    # SQLAlchemy tries to NULL the child's foreign key first, which fails against a
+    # NOT NULL column and makes deleting a user or project impossible.
+    projects: Mapped[list[Project]] = relationship(
+        back_populates="user", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class Project(Base):
@@ -52,7 +57,9 @@ class Project(Base):
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     user: Mapped[User] = relationship(back_populates="projects")
-    tasks: Mapped[list[Task]] = relationship(back_populates="project")
+    tasks: Mapped[list[Task]] = relationship(
+        back_populates="project", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class Agent(Base):
@@ -113,7 +120,9 @@ class Funnel(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    steps: Mapped[list[FunnelStep]] = relationship(back_populates="funnel")
+    steps: Mapped[list[FunnelStep]] = relationship(
+        back_populates="funnel", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class FunnelStep(Base):
