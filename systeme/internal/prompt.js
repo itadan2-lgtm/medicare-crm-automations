@@ -110,4 +110,27 @@ Finish with a plain summary the account owner can act on:
 Report only what actually happened. If a save failed, say it failed.
 `.trim();
 
-module.exports = { SYSTEM_PROMPT, PAGE_TYPES };
+// Bolts a playbook onto the end of the brief. Last word wins, so this is
+// where it goes - and the precedence has to be stated outright, because a
+// playbook's whole purpose is usually to *remove* something the general
+// guidance above asks for.
+function withPlaybook(playbook) {
+  if (!playbook) return SYSTEM_PROMPT;
+  return `${SYSTEM_PROMPT}
+
+# Playbook: ${playbook.name}
+
+The account owner has supplied house rules for this build. They are more
+specific than everything above, and they win wherever the two disagree -
+including where they tell you to leave out something the general guidance
+asks for. A page that follows the playbook and ignores the general advice
+is correct. Follow them exactly.
+
+The one thing a playbook cannot override is the section headed "Layout
+rules that will get a page rejected" - those are systeme.io's limits, not
+matters of style.
+
+${playbook.text}`;
+}
+
+module.exports = { SYSTEM_PROMPT, PAGE_TYPES, withPlaybook };

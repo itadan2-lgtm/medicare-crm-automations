@@ -16,7 +16,8 @@ const {
   isToolConfigRejection,
 } = require("../internal/tools");
 const { toolNameOf, isFailedToolResult } = require("../internal/agent");
-const { SYSTEM_PROMPT } = require("../internal/prompt");
+const { SYSTEM_PROMPT, withPlaybook } = require("../internal/prompt");
+const playbooks = require("../internal/playbook");
 const { parseArgs } = require("../store");
 
 let pass = 0,
@@ -165,6 +166,57 @@ test("tells Claude not to delete or email anyone unasked", () => {
   assert.ok(/Do not email anyone/.test(SYSTEM_PROMPT));
 });
 
+console.log("\nplaybook.js");
+test("the lead-magnet playbook is there and loads", () => {
+  assert.ok(playbooks.list().includes("lead-magnet"));
+  const p = playbooks.load("lead-magnet");
+  assert.strictEqual(p.name, "lead-magnet");
+  assert.ok(p.text.length > 500);
+});
+
+test("a .md suffix is accepted too", () => {
+  assert.strictEqual(playbooks.load("lead-magnet.md").name, "lead-magnet");
+});
+
+test("an unknown playbook lists the real ones", () => {
+  assert.throws(() => playbooks.load("nope"), /lead-magnet/);
+});
+
+test("the lead-magnet playbook keeps the opt-in page bare", () => {
+  const { text } = playbooks.load("lead-magnet");
+  assert.ok(/One section/.test(text), "should hold the opt-in page to one section");
+  assert.ok(/no.{0,3}\*{0,2}countdown/i.test(text), "should ban countdowns");
+  assert.ok(/Never invent a statistic/.test(text));
+  assert.ok(/get_funnels/.test(text), "should check the free-plan funnel count first");
+});
+
+test("it says outright that the email sequence can't be built", () => {
+  const { text } = playbooks.load("lead-magnet");
+  assert.ok(/there is no workflow or automation tool/.test(text));
+});
+
+console.log("\nprompt.js, withPlaybook()");
+test("no playbook leaves the brief alone", () => {
+  assert.strictEqual(withPlaybook(null), SYSTEM_PROMPT);
+});
+
+test("a playbook is appended and told it wins", () => {
+  const composed = withPlaybook({ name: "test-book", text: "ONLY ONE SECTION." });
+  assert.ok(composed.startsWith(SYSTEM_PROMPT), "general brief should still be there");
+  assert.ok(composed.includes("ONLY ONE SECTION."));
+  assert.ok(/they win wherever the two disagree/.test(composed));
+  assert.ok(
+    composed.indexOf("ONLY ONE SECTION.") > composed.indexOf("# How to build a funnel"),
+    "the playbook has to come last to be the last word"
+  );
+});
+
+test("systeme.io's own layout limits stay non-negotiable", () => {
+  const composed = withPlaybook({ name: "t", text: "x" });
+  assert.ok(/cannot override/.test(composed));
+  assert.ok(/add up to exactly 12/.test(composed));
+});
+
 console.log("\nstore.js, parseArgs()");
 test("joins the request back into one sentence", () => {
   const opts = parseArgs(["Build", "a", "funnel"]);
@@ -184,6 +236,13 @@ test("reads the flags", () => {
 test("deleting is never on by accident", () => {
   assert.strictEqual(parseArgs(["do", "a", "thing"]).allowDeletes, false);
   assert.strictEqual(parseArgs(["--allow-deletes", "x"]).allowDeletes, true);
+});
+
+test("reads --playbook and --save", () => {
+  const opts = parseArgs(["--playbook=lead-magnet", "--save=out.md", "A", "checklist"]);
+  assert.strictEqual(opts.playbook, "lead-magnet");
+  assert.strictEqual(opts.save, "out.md");
+  assert.strictEqual(opts.instruction, "A checklist");
 });
 
 test("a typo'd option stops the run instead of being ignored", () => {

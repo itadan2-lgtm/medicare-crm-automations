@@ -6,9 +6,12 @@
 // It designs the funnel, creates it in your systeme.io account, writes every
 // page, and prints the dashboard link when it's done.
 
+const fs = require("fs");
+
 const { load, buildMcpUrl } = require("./internal/config");
-const { SYSTEM_PROMPT } = require("./internal/prompt");
+const { withPlaybook } = require("./internal/prompt");
 const { runAgent } = require("./internal/agent");
+const playbooks = require("./internal/playbook");
 
 const HELP = `
 Build and manage systeme.io funnels in plain English.
@@ -16,12 +19,16 @@ Build and manage systeme.io funnels in plain English.
   npm run store -- "<what you want>"
 
 Examples
-  npm run store -- "Build a lead magnet funnel for a free Medicare
-                    enrollment checklist for people turning 65"
+  npm run store -- --playbook=lead-magnet "A free doctor-visit prep
+                    checklist for women in perimenopause"
   npm run store -- "Add a thank-you page to my 'email collector' funnel"
   npm run store -- "List my funnels and tell me which ones have empty pages"
 
 Options
+  --playbook=NAME   Build to house rules instead of generic best practice.
+                    A name from systeme/playbooks/, or a path to a .md file.
+  --save=FILE       Also write everything it says to a file - useful when
+                    the run produces copy you need to paste elsewhere.
   --dry-run         Look, plan, and describe - but change nothing. Enforced
                     by only switching on systeme.io's read-only tools, so it
                     can't write even if it decides to.
@@ -40,6 +47,8 @@ function parseArgs(argv) {
     else if (arg === "--allow-deletes") opts.allowDeletes = true;
     else if (arg.startsWith("--effort=")) opts.effort = arg.slice(9).toLowerCase();
     else if (arg.startsWith("--turns=")) opts.turns = Number(arg.slice(8));
+    else if (arg.startsWith("--playbook=")) opts.playbook = arg.slice(11);
+    else if (arg.startsWith("--save=")) opts.save = arg.slice(7);
     else if (arg.startsWith("--")) throw new Error(`I don't know the option "${arg}". Try --help.`);
     else words.push(arg);
   }
@@ -82,6 +91,10 @@ async function main() {
   if (opts.effort) config.effort = opts.effort;
   if (opts.turns) config.maxTurns = opts.turns;
 
+  // Everything that can fail without touching the network fails here, in
+  // cost order: a mistyped playbook name shouldn't wait behind a key check.
+  const playbook = opts.playbook ? playbooks.load(opts.playbook) : null;
+
   // Check both keys before announcing anything - "working in your account"
   // followed by "you have no key" reads like something already happened.
   if (!config.anthropicKey) {
@@ -95,6 +108,7 @@ async function main() {
 
   const out = makeWriter();
   out.blank();
+  if (playbook) out.line(`Playbook: ${playbook.name}`);
   if (opts.dryRun) {
     out.line("Dry run - reading your account and planning, changing nothing.");
   } else if (opts.allowDeletes) {
@@ -104,15 +118,22 @@ async function main() {
   }
   out.blank();
 
+  // Kept in full for --save: a playbook run ends with email copy you need
+  // to paste into systeme.io by hand, and scrolling a terminal for it is
+  // a miserable way to get it.
+  let transcript = "";
+
   const result = await runAgent({
     config,
     instruction: opts.instruction,
-    system: SYSTEM_PROMPT,
+    system: withPlaybook(playbook),
     readOnly: opts.dryRun,
     allowDeletes: opts.allowDeletes,
     onEvent(e) {
-      if (e.type === "text") out.text(e.text);
-      else if (e.type === "tool") out.line(`  → ${e.name}`);
+      if (e.type === "text") {
+        transcript += e.text;
+        out.text(e.text);
+      } else if (e.type === "tool") out.line(`  → ${e.name}`);
       else if (e.type === "tool_failed") out.line("  ! that call came back with an error");
     },
   });
@@ -134,6 +155,10 @@ async function main() {
   if (result.truncated) {
     out.line("It ran out of room mid-answer. Re-run with a narrower request.");
     process.exitCode = 1;
+  }
+  if (opts.save) {
+    fs.writeFileSync(opts.save, `${transcript.trim()}\n`);
+    out.line(`Saved everything it said to ${opts.save}`);
   }
   out.line("Your funnels: https://systeme.io/dashboard/funnels");
   out.blank();

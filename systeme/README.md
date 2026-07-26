@@ -81,10 +81,52 @@ npm run store -- "Add a thank-you page to my 'email collector' funnel"
 
 | Option | What it does |
 |---|---|
+| `--playbook=NAME` | Build to house rules instead of generic best practice. See below. |
+| `--save=FILE` | Write everything it says to a file — worth using whenever the run produces copy you have to paste somewhere. |
 | `--dry-run` | Only systeme.io's read-only tools are switched on. It can plan and describe, but it cannot write — enforced by the connection, not by asking nicely. |
 | `--allow-deletes` | Switches the delete/remove tools back on. Off by default. |
 | `--effort=LEVEL` | `low`, `medium`, `high`, `xhigh` (default), `max`. Lower is cheaper and faster; higher thinks harder about layout and copy. |
 | `--turns=N` | Give up after N rounds. Default 40. |
+
+## Playbooks
+
+Generic landing-page advice — six to ten sections, testimonials, an FAQ, a
+stats band — is wrong for some jobs. An opt-in page converts better with one
+email field and nothing else on it. A playbook is a markdown file of house
+rules that **overrides** the general guidance wherever the two disagree.
+
+```bash
+npm run store -- --playbook=lead-magnet --save=emails.md \
+  "A free doctor-visit prep checklist for women in perimenopause"
+```
+
+Shipped with one: **`lead-magnet`**, which encodes the free-plan lead magnet
+build — a bare one-section opt-in page, a thank-you page that does the
+inbox-check and one soft sell, no countdowns or invented statistics, a check
+of your remaining free-plan funnel slots, and the five-email sequence
+written out for you to paste in.
+
+Add your own by dropping a `.md` file into `systeme/playbooks/` — no code
+change needed. `--playbook` also accepts a path to a file anywhere, for a
+one-off brief you don't want to check in.
+
+The one thing a playbook can't override is systeme.io's own page limits
+(columns summing to 12, and so on) — those aren't matters of style.
+
+### The email sequence has to be built by hand
+
+systeme.io's tools cover funnels, pages, contacts, tags and newsletters.
+**There is no workflow or automation tool**, so nothing here can build the
+nurture sequence. The `lead-magnet` playbook writes all five emails out
+instead — subject lines, bodies, and the wait between each — for you to
+paste into Automations → Workflows → Create, triggered on *Form subscribed*.
+Use `--save=emails.md` so you're not scraping them out of a terminal.
+
+Two other things it can't do, and will tell you about: uploading your
+download file (do that in Contacts → Files, then paste the URL into email 1),
+and adding a dropdown to the opt-in form — the form only supports email,
+first name, last name and phone, so a segmentation question has to be added
+in the page editor by hand.
 
 ### What it costs
 
@@ -128,7 +170,9 @@ Medicare page are a compliance problem, not a placeholder.
 | `internal/config.js` | Keys, defaults, and the connection URL |
 | `internal/tools.js` | Which systeme.io tools are allowed on a run |
 | `internal/prompt.js` | The brief Claude works from |
+| `internal/playbook.js` | Loads house rules from `playbooks/` |
 | `internal/agent.js` | Runs the conversation and adds up the bill |
+| `playbooks/*.md` | House rules, one file per kind of funnel |
 | `tests/run-tests.js` | Offline tests — no keys, no charges |
 
 Run `npm run store:test` any time; it never touches the network.
@@ -162,3 +206,5 @@ page, so this list stays right even if systeme.io adds block types.
 - **Existing pages can't be edited in place.** systeme.io's page-content
   tool replaces a whole page body; it has no partial-edit mode. Ask for a
   new page rather than a tweak to an existing one.
+- **No workflows, no email automation, no file uploads.** See the playbook
+  section above for what to do by hand.
