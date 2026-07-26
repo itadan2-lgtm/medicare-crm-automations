@@ -1,32 +1,32 @@
 {
   "palette": {
-    "background": "#FBF8F4",
-    "surface": "#F1E9E0",
-    "accent": "#A65A47",
+    "background": "#FDFBF7",
+    "surface": "#F0E7DC",
+    "accent": "#A83E22",
     "accentText": "#FFFFFF",
-    "mutedText": "#2B2523",
+    "mutedText": "#1B1714",
     "cornerStyle": "soft",
     "fontPair": "editorial"
   },
   "sections": [
     {
       "tone": "hero",
-      "backgroundImageDescription": "soft morning light through kitchen window",
+      "backgroundImageDescription": null,
       "rows": [
         {
           "columns": [
             {
-              "size": 12,
+              "size": 7,
               "blocks": [
                 {
                   "type": "Headline",
-                  "text": "You get about twelve minutes with your doctor. Don't spend eight of them remembering.",
+                  "text": "You get twelve minutes with your doctor.",
                   "level": "h1"
                 },
                 {
                   "type": "Text",
-                  "textAlign": "center",
-                  "html": "<p>A free one-page checklist to take to your next appointment — so you walk out having said the thing you actually came to say.</p>"
+                  "textAlign": "left",
+                  "html": "<p>Don't spend eight of them remembering. A free one-page checklist to take to your next appointment — so you walk out having said the thing you came to say.</p>"
                 },
                 {
                   "type": "Form",
@@ -35,8 +35,17 @@
                 },
                 {
                   "type": "Text",
-                  "textAlign": "center",
+                  "textAlign": "left",
                   "html": "<p>No spam. Unsubscribe any time.</p>"
+                }
+              ]
+            },
+            {
+              "size": 5,
+              "blocks": [
+                {
+                  "type": "Image",
+                  "imageDescription": "woman writing notebook kitchen daylight"
                 }
               ]
             }
@@ -57,11 +66,6 @@
                   "type": "Headline",
                   "text": "You know something has changed. Getting someone else to agree is the harder part.",
                   "level": "h2"
-                },
-                {
-                  "type": "Text",
-                  "textAlign": null,
-                  "html": "<p>The problem usually isn't that you can't explain it. It's that you're asked to explain months of it, from memory, in a room, in about twelve minutes.</p>"
                 }
               ]
             }
@@ -70,7 +74,17 @@
         {
           "columns": [
             {
-              "size": 12,
+              "size": 5,
+              "blocks": [
+                {
+                  "type": "Text",
+                  "textAlign": "left",
+                  "html": "<p>The problem usually isn't that you can't explain it. It's that you're asked to explain months of it, from memory, in a room, in about twelve minutes.</p>"
+                }
+              ]
+            },
+            {
+              "size": 7,
               "blocks": [
                 {
                   "type": "BulletList",
@@ -114,8 +128,8 @@
                 {
                   "type": "Card",
                   "text": "A symptom baseline",
-                  "html": "<p>What changed, when it started, and how often it happens — in one place instead of five half-remembered examples.</p>",
-                  "imageDescription": "clipboard checklist",
+                  "html": "<p>What changed, when it started, how often it happens — in one place instead of five half-remembered examples.</p>",
+                  "imageDescription": "clipboard",
                   "subText": null
                 }
               ]
@@ -126,8 +140,8 @@
                 {
                   "type": "Card",
                   "text": "Dates, not adjectives",
-                  "html": "<p>Room to write the specifics, so <strong>a while</strong> becomes something a clinician can actually read.</p>",
-                  "imageDescription": "calendar dates",
+                  "html": "<p>Room for the specifics, so <strong>a while</strong> becomes something a clinician can actually read.</p>",
+                  "imageDescription": "calendar",
                   "subText": null
                 }
               ]
@@ -137,9 +151,9 @@
               "blocks": [
                 {
                   "type": "Card",
-                  "text": "Questions worth having ready",
+                  "text": "Questions ready to go",
                   "html": "<p>Including the follow-up that changes the direction of most appointments when the first answer is no.</p>",
-                  "imageDescription": "speech bubble question mark",
+                  "imageDescription": "question mark",
                   "subText": null
                 }
               ]
@@ -159,7 +173,7 @@
               "blocks": [
                 {
                   "type": "Image",
-                  "imageDescription": "woman writing notes at kitchen table"
+                  "imageDescription": "hands filling paper checklist closeup"
                 }
               ]
             },
@@ -229,6 +243,31 @@
                       "answer": "<p>It's used to send you the checklist and a few follow-up emails. Nothing else, and unsubscribing takes one click.</p>"
                     }
                   ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "cta-final",
+      "backgroundImageDescription": "warm textured linen surface",
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "One page. Twelve minutes better spent.",
+                  "level": "h2"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": "center",
+                  "html": "<p>The form is at the top of this page. It takes one field and about five seconds.</p>"
                 }
               ]
             }

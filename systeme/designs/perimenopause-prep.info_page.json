@@ -1,10 +1,10 @@
 {
   "palette": {
-    "background": "#FBF8F4",
-    "surface": "#F1E9E0",
-    "accent": "#A65A47",
+    "background": "#FDFBF7",
+    "surface": "#F0E7DC",
+    "accent": "#A83E22",
     "accentText": "#FFFFFF",
-    "mutedText": "#2B2523",
+    "mutedText": "#1B1714",
     "cornerStyle": "soft",
     "fontPair": "editorial"
   },
@@ -16,7 +16,7 @@
         {
           "columns": [
             {
-              "size": 12,
+              "size": 7,
               "blocks": [
                 {
                   "type": "Headline",
@@ -25,8 +25,17 @@
                 },
                 {
                   "type": "Text",
-                  "textAlign": null,
-                  "html": "<p>Nothing here is medical advice, and none of it is about arguing with your doctor. It's about walking in with the information already in a form somebody can read — which is most of what makes a short appointment go well.</p>"
+                  "textAlign": "left",
+                  "html": "<p>None of this is medical advice, and none of it is about arguing with your doctor. It's about walking in with the information already in a form somebody can read — which is most of what makes a short appointment go well.</p>"
+                }
+              ]
+            },
+            {
+              "size": 5,
+              "blocks": [
+                {
+                  "type": "Image",
+                  "imageDescription": "notebook pen wooden table window light"
                 }
               ]
             }
@@ -47,11 +56,6 @@
                   "type": "Headline",
                   "text": "Dates travel further than descriptions",
                   "level": "h2"
-                },
-                {
-                  "type": "Text",
-                  "textAlign": null,
-                  "html": "<p>Most people arrive with symptoms. Far fewer arrive with dates. <strong>I've been tired for a while</strong> and <strong>I've woken at 3am roughly four nights a week since October</strong> are the same information, and they produce completely different conversations.</p>"
                 }
               ]
             }
@@ -60,11 +64,21 @@
         {
           "columns": [
             {
-              "size": 12,
+              "size": 6,
               "blocks": [
                 {
                   "type": "Text",
-                  "textAlign": null,
+                  "textAlign": "left",
+                  "html": "<p>Most people arrive with symptoms. Far fewer arrive with dates. <strong>I've been tired for a while</strong> and <strong>I've woken at 3am roughly four nights a week since October</strong> are the same information, and they produce completely different conversations.</p>"
+                }
+              ]
+            },
+            {
+              "size": 6,
+              "blocks": [
+                {
+                  "type": "Text",
+                  "textAlign": "left",
                   "html": "<p>You don't need six months of data before it's worth bringing. Three weeks of dated notes already stops being a description and starts being a record.</p>"
                 }
               ]
@@ -105,7 +119,7 @@
               "blocks": [
                 {
                   "type": "Image",
-                  "imageDescription": "open notebook and pen on table"
+                  "imageDescription": "handbag notebook appointment card"
                 }
               ]
             }
@@ -120,7 +134,16 @@
         {
           "columns": [
             {
-              "size": 12,
+              "size": 5,
+              "blocks": [
+                {
+                  "type": "Image",
+                  "imageDescription": "waiting room chairs soft daylight"
+                }
+              ]
+            },
+            {
+              "size": 7,
               "blocks": [
                 {
                   "type": "Headline",
@@ -129,25 +152,16 @@
                 },
                 {
                   "type": "Text",
-                  "textAlign": null,
+                  "textAlign": "left",
                   "html": "<p>It might be. It might also be the first answer rather than the final one. Either way, the useful move is a question rather than a disagreement.</p>"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "columns": [
-            {
-              "size": 12,
-              "blocks": [
+                },
                 {
                   "type": "BulletList",
                   "items": [
                     "Ask the follow-up: if it isn't perimenopause, what else would explain this pattern?",
                     "Ask what would need to be true for it to be worth investigating",
                     "Ask what to watch for, and when to come back",
-                    "Bring the record — written dates are harder to wave off than a description",
+                    "Bring the record — written dates are harder to wave off",
                     "Ask for the reasoning to be written in your notes"
                   ]
                 }
@@ -173,7 +187,7 @@
                 },
                 {
                   "type": "Text",
-                  "textAlign": null,
+                  "textAlign": "left",
                   "html": "<p>The five minutes straight after the appointment are the ones you'll wish you had back. Capture it while it's still exact.</p>"
                 }
               ]
