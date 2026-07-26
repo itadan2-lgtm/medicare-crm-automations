@@ -14,8 +14,9 @@
     "t65-tag": "node automations/t65-tagger.js",
     "store": "node systeme/store.js",
     "store:check": "node systeme/check.js",
+    "store:designs": "node systeme/check-designs.js",
     "store:test": "node systeme/tests/run-tests.js",
-    "test": "node automations/tests/run-tests.js && node automations/tests/integration-mock.js && node systeme/tests/run-tests.js"
+    "test": "node automations/tests/run-tests.js && node automations/tests/integration-mock.js && node systeme/tests/run-tests.js && node systeme/check-designs.js"
   },
   "license": "UNLICENSED",
   "dependencies": {

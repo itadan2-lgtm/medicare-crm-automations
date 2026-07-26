@@ -1,0 +1,137 @@
+{
+  "palette": {
+    "background": "#FBF8F4",
+    "surface": "#F1E9E0",
+    "accent": "#A65A47",
+    "accentText": "#FFFFFF",
+    "mutedText": "#2B2523",
+    "cornerStyle": "soft",
+    "fontPair": "editorial"
+  },
+  "sections": [
+    {
+      "tone": "hero",
+      "backgroundImageDescription": "soft morning light through kitchen window",
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "Check your inbox.",
+                  "level": "h1"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": "center",
+                  "html": "<p>It's on its way. If it hasn't landed in ten minutes, have a look in spam or promotions — and drag it to your main inbox so the next one arrives properly.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "plain",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "While you're here.",
+                  "level": "h2"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": null,
+                  "html": "<p>The checklist is one page from a 24-page fillable tracker — built for the whole picture, not just the twelve minutes in the room.</p>"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 4,
+              "blocks": [
+                {
+                  "type": "Card",
+                  "text": "A 30-second daily log",
+                  "html": "<p>Short enough that you'll actually keep it up on the bad days.</p>",
+                  "imageDescription": "pencil daily notes",
+                  "subText": null
+                }
+              ]
+            },
+            {
+              "size": 4,
+              "blocks": [
+                {
+                  "type": "Card",
+                  "text": "A month at a glance",
+                  "html": "<p>Where the pattern shows up — sleep, cycle, energy and symptoms on one spread.</p>",
+                  "imageDescription": "monthly calendar grid",
+                  "subText": null
+                }
+              ]
+            },
+            {
+              "size": 4,
+              "blocks": [
+                {
+                  "type": "Card",
+                  "text": "The full doctor-visit section",
+                  "html": "<p>Prep, the questions to ask, and space for what to write down afterwards.</p>",
+                  "imageDescription": "stethoscope notebook",
+                  "subText": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "footer",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Button",
+                  "text": "Have a look",
+                  "subText": "24 pages, fillable on a phone or printed"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Text",
+                  "textAlign": "center",
+                  "html": "<p>If the free checklist is all you needed, that's completely fine — it's yours either way. This isn't medical advice.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

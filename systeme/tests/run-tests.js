@@ -7,6 +7,8 @@
  */
 
 const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
 
 const { buildMcpUrl, redact, load, DEFAULT_MCP_BASE } = require("../internal/config");
 const {
@@ -18,6 +20,8 @@ const {
 const { toolNameOf, isFailedToolResult } = require("../internal/agent");
 const { SYSTEM_PROMPT, withPlaybook } = require("../internal/prompt");
 const playbooks = require("../internal/playbook");
+const { validate } = require("../internal/validate");
+const { pageTypeOf } = require("../check-designs");
 const { parseArgs } = require("../store");
 
 let pass = 0,
@@ -233,6 +237,159 @@ test("systeme.io's own layout limits stay non-negotiable", () => {
   const composed = withPlaybook({ name: "t", text: "x" });
   assert.ok(/cannot override/.test(composed));
   assert.ok(/add up to exactly 12/.test(composed));
+});
+
+console.log("\nvalidate.js");
+
+// A minimal design that passes, so each test below can break exactly one thing.
+const good = () => ({
+  palette: {
+    background: "#FFFFFF",
+    surface: "#F1F5F9",
+    accent: "#0F172A",
+    accentText: "#FFFFFF",
+    mutedText: "#1F2937",
+    cornerStyle: "soft",
+    fontPair: "editorial",
+  },
+  sections: [
+    {
+      tone: "hero",
+      backgroundImageDescription: null,
+      rows: [
+        {
+          columns: [
+            {
+              size: 12,
+              blocks: [
+                { type: "Headline", text: "Hello", level: "h1" },
+                { type: "Form", formFields: ["email"], formSubmitText: "Get it" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+test("a clean design has nothing to report", () => {
+  assert.deepStrictEqual(validate(good(), "squeeze"), []);
+});
+
+test("catches columns that don't add up to 12", () => {
+  const design = good();
+  design.sections[0].rows[0].columns = [
+    { size: 6, blocks: [] },
+    { size: 5, blocks: [] },
+  ];
+  const problems = validate(design, "squeeze");
+  assert.ok(problems.some((p) => /add up to 11, not 12/.test(p)), problems.join(" | "));
+});
+
+test("catches an h1 outside the hero", () => {
+  const design = good();
+  design.sections[0].tone = "feature";
+  const problems = validate(design, "squeeze");
+  assert.ok(problems.some((p) => /h1 is only allowed in a hero/.test(p)), problems.join(" | "));
+});
+
+test("catches a block the page type doesn't accept", () => {
+  const design = good();
+  design.sections[0].rows[0].columns[0].blocks.push({
+    type: "Countdown",
+    targetDateTime: null,
+  });
+  const problems = validate(design, "opt_in_thank_you_page");
+  assert.ok(
+    problems.some((p) => /Countdown isn't allowed on opt_in_thank_you_page/.test(p)),
+    problems.join(" | ")
+  );
+});
+
+test("catches a missing required field, including nullable ones", () => {
+  const design = good();
+  design.sections[0].rows[0].columns[0].blocks.push({ type: "Button", text: "Go" });
+  const problems = validate(design, "squeeze");
+  assert.ok(problems.some((p) => /Button\): subText is missing/.test(p)), problems.join(" | "));
+});
+
+test("catches a second form", () => {
+  const design = good();
+  design.sections[0].rows[0].columns[0].blocks.push({
+    type: "Form",
+    formFields: ["email"],
+    formSubmitText: "Again",
+  });
+  const problems = validate(design, "squeeze");
+  assert.ok(problems.some((p) => /2 Form blocks/.test(p)), problems.join(" | "));
+});
+
+test("catches too many sections for the page type", () => {
+  const design = good();
+  design.sections = [design.sections[0], design.sections[0], design.sections[0], design.sections[0]];
+  const problems = validate(design, "opt_in_thank_you_page");
+  assert.ok(problems.some((p) => /4 sections - opt_in_thank_you_page allows 1-3/.test(p)));
+});
+
+test("info pages must not carry background images", () => {
+  const design = good();
+  design.sections[0].backgroundImageDescription = "sunny office";
+  design.sections.push(design.sections[0]);
+  const problems = validate(design, "info_page");
+  assert.ok(
+    problems.some((p) => /needs backgroundImageDescription to be null/.test(p)),
+    problems.join(" | ")
+  );
+});
+
+test("embedded forms can't use h1 at all", () => {
+  const problems = validate(good(), "inline");
+  assert.ok(problems.some((p) => /h1 isn't allowed on inline at all/.test(p)), problems.join(" | "));
+});
+
+test("an unknown page type is refused outright", () => {
+  assert.ok(validate(good(), "landing_page")[0].includes("isn't a systeme.io page type"));
+});
+
+console.log("\ndesigns/");
+test("every checked-in design is still valid", () => {
+  const dir = path.join(__dirname, "..", "designs");
+  const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith(".json")) : [];
+  assert.ok(files.length > 0, "expected at least one design on disk");
+  for (const file of files) {
+    const design = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
+    const problems = validate(design, pageTypeOf(file));
+    assert.deepStrictEqual(problems, [], `${file}: ${problems.join(" | ")}`);
+  }
+});
+
+test("the opt-in design keeps every exit route off the page", () => {
+  const design = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "..", "designs", "checklist-optin.squeeze.json"), "utf8")
+  );
+  const blocks = design.sections
+    .flatMap((s) => s.rows)
+    .flatMap((r) => r.columns)
+    .flatMap((c) => c.blocks);
+  for (const type of ["Menu", "Button"]) {
+    assert.ok(!blocks.some((b) => b.type === type), `${type} would give the reader a way out`);
+  }
+  assert.strictEqual(blocks.filter((b) => b.type === "Form").length, 1);
+});
+
+test("no invented testimonials or statistics made it onto a page", () => {
+  const dir = path.join(__dirname, "..", "designs");
+  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) {
+    const design = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
+    const blocks = design.sections
+      .flatMap((s) => s.rows)
+      .flatMap((r) => r.columns)
+      .flatMap((c) => c.blocks);
+    for (const type of ["Testimonial", "Stat"]) {
+      assert.ok(!blocks.some((b) => b.type === type), `${file} has a ${type} block to verify`);
+    }
+  }
 });
 
 console.log("\nstore.js, parseArgs()");

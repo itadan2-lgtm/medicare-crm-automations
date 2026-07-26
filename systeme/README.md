@@ -178,10 +178,39 @@ Medicare page are a compliance problem, not a placeholder.
 | `internal/prompt.js` | The brief Claude works from |
 | `internal/playbook.js` | Loads house rules from `playbooks/` |
 | `internal/agent.js` | Runs the conversation and adds up the bill |
+| `internal/validate.js` | systeme.io's page rules, in code |
+| `check-designs.js` | Checks every design in `designs/` offline |
 | `playbooks/*.md` | House rules, one file per kind of funnel |
+| `designs/*.json` | Hand-written page designs, ready to save |
 | `tests/run-tests.js` | Offline tests — no keys, no charges |
 
 Run `npm run store:test` any time; it never touches the network.
+
+## Writing a page design by hand
+
+Sometimes you want to art-direct a page yourself rather than describe it.
+Drop a JSON file into `systeme/designs/`, named `<name>.<page_type>.json`,
+and check it before it goes anywhere near your account:
+
+```bash
+npm run store:designs
+```
+
+That runs offline and free. It catches the things systeme.io rejects — a row
+whose columns add up to 11, an `h1` outside the hero section, a block type
+that page type doesn't accept, a second form, a missing nullable field — and
+tells you which section and row, which the API's own error doesn't.
+
+Then hand the file to the builder:
+
+```bash
+npm run store -- "Save systeme/designs/checklist-optin.squeeze.json
+                  to the Opt-in page of my Checklist funnel"
+```
+
+Three designs ship with the repo, for the perimenopause checklist funnel:
+the opt-in page, the thank-you page, and a standalone appointment-prep info
+page.
 
 ## Page types it can build
 

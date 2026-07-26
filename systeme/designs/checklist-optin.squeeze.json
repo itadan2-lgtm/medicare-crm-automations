@@ -1,0 +1,260 @@
+{
+  "palette": {
+    "background": "#FBF8F4",
+    "surface": "#F1E9E0",
+    "accent": "#A65A47",
+    "accentText": "#FFFFFF",
+    "mutedText": "#2B2523",
+    "cornerStyle": "soft",
+    "fontPair": "editorial"
+  },
+  "sections": [
+    {
+      "tone": "hero",
+      "backgroundImageDescription": "soft morning light through kitchen window",
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "You get about twelve minutes with your doctor. Don't spend eight of them remembering.",
+                  "level": "h1"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": "center",
+                  "html": "<p>A free one-page checklist to take to your next appointment — so you walk out having said the thing you actually came to say.</p>"
+                },
+                {
+                  "type": "Form",
+                  "formFields": ["email"],
+                  "formSubmitText": "Send me the checklist"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": "center",
+                  "html": "<p>No spam. Unsubscribe any time.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "pain",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "You know something has changed. Getting someone else to agree is the harder part.",
+                  "level": "h2"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": null,
+                  "html": "<p>The problem usually isn't that you can't explain it. It's that you're asked to explain months of it, from memory, in a room, in about twelve minutes.</p>"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "BulletList",
+                  "items": [
+                    "Symptoms that don't line up into one tidy explanation",
+                    "Appointments that end before you've said the main thing",
+                    "Being told it's stress, or sleep, or just getting older",
+                    "Months of noticing, and nothing written down to point at",
+                    "Walking back to the car with the good question still unasked"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "feature",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "What's on the page",
+                  "level": "h2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 4,
+              "blocks": [
+                {
+                  "type": "Card",
+                  "text": "A symptom baseline",
+                  "html": "<p>What changed, when it started, and how often it happens — in one place instead of five half-remembered examples.</p>",
+                  "imageDescription": "clipboard checklist",
+                  "subText": null
+                }
+              ]
+            },
+            {
+              "size": 4,
+              "blocks": [
+                {
+                  "type": "Card",
+                  "text": "Dates, not adjectives",
+                  "html": "<p>Room to write the specifics, so <strong>a while</strong> becomes something a clinician can actually read.</p>",
+                  "imageDescription": "calendar dates",
+                  "subText": null
+                }
+              ]
+            },
+            {
+              "size": 4,
+              "blocks": [
+                {
+                  "type": "Card",
+                  "text": "Questions worth having ready",
+                  "html": "<p>Including the follow-up that changes the direction of most appointments when the first answer is no.</p>",
+                  "imageDescription": "speech bubble question mark",
+                  "subText": null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "plain",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 6,
+              "blocks": [
+                {
+                  "type": "Image",
+                  "imageDescription": "woman writing notes at kitchen table"
+                }
+              ]
+            },
+            {
+              "size": 6,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "How to use it",
+                  "level": "h2"
+                },
+                {
+                  "type": "BulletList",
+                  "items": [
+                    "Print it, or fill it in on your phone",
+                    "Start a few days before the appointment, not the morning of",
+                    "Take it in and keep it open in front of you",
+                    "Write down what was said before you get back to the car"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "faq",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Headline",
+                  "text": "Before you sign up",
+                  "level": "h2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Faq",
+                  "items": [
+                    {
+                      "question": "Is it actually free?",
+                      "answer": "<p>Yes — one page, no card, no trial. You'll get a short run of follow-up emails afterwards, and you can leave at any point.</p>"
+                    },
+                    {
+                      "question": "Do I need a diagnosis to use it?",
+                      "answer": "<p>No. It's built for the stage before one, when you're trying to describe what's happening clearly enough to be taken seriously.</p>"
+                    },
+                    {
+                      "question": "My appointment is tomorrow. Is it too late?",
+                      "answer": "<p>No. Fill in the symptom section tonight — even a few dated notes change how the conversation goes.</p>"
+                    },
+                    {
+                      "question": "What happens to my email address?",
+                      "answer": "<p>It's used to send you the checklist and a few follow-up emails. Nothing else, and unsubscribing takes one click.</p>"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tone": "footer",
+      "backgroundImageDescription": null,
+      "rows": [
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
+                {
+                  "type": "Text",
+                  "textAlign": "center",
+                  "html": "<p>No spam. Unsubscribe any time. This is help with preparing for an appointment — it isn't medical advice, and it doesn't replace talking to a clinician.</p>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
