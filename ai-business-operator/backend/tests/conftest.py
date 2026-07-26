@@ -18,6 +18,7 @@ from uuid import uuid4
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -42,6 +43,24 @@ async def engine():  # noqa: ANN201
         pytest.skip("TEST_DATABASE_URL not set")
 
     engine = create_async_engine(TEST_DATABASE_URL, poolclass=NullPool)
+
+    # Reset committed state. Most tests are isolated by the rollback in `session`,
+    # but the concurrency test needs real transactions and leaves rows behind, and
+    # anything run manually against this database does too. Claiming is
+    # deliberately global across projects — a worker serves the whole queue — so a
+    # stray pending task silently changes what a claim returns.
+    #
+    # TEST_DATABASE_URL must point at a dedicated test database: this is
+    # destructive. `agents` is preserved; it is seeded by the migration and tasks
+    # reference it.
+    async with engine.begin() as connection:
+        await connection.execute(
+            text(
+                "TRUNCATE memory_records, analytics_snapshots, tasks, funnel_steps, "
+                "funnels, emails, products, projects, users RESTART IDENTITY CASCADE"
+            )
+        )
+
     try:
         yield engine
     finally:

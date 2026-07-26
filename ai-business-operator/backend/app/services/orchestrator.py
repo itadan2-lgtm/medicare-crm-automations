@@ -257,7 +257,20 @@ class Orchestrator:
         else:
             task.attempts += 1
             task.error = result.error
-            if task.attempts > self.settings.max_task_attempts:
+            if not result.retryable:
+                # Nothing about waiting or trying again changes a missing key or an
+                # empty credit balance. Block now so the remaining tasks don't each
+                # burn their attempts against the same wall.
+                task.status = TaskStatus.BLOCKED.value
+                log.error(
+                    "task.blocked_permanently",
+                    extra={
+                        "task_id": task.task_id,
+                        "agent": result.agent,
+                        "error": (result.error or "")[:200],
+                    },
+                )
+            elif task.attempts > self.settings.max_task_attempts:
                 task.status = TaskStatus.BLOCKED.value
                 log.error(
                     "task.blocked",

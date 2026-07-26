@@ -20,7 +20,7 @@ import uuid
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 
-from agents.base.llm import ClaudeLLM
+from agents.base.llm import ClaudeLLM, PermanentLLMError
 from agents.loader import load_agent
 from agents.memory_hooks import persist_output, recall_context
 from agents.tools import build_toolset, release_toolset
@@ -110,12 +110,22 @@ class Worker:
             except Exception as exc:
                 await tool_session.rollback()
                 log.exception("agent.failed", extra={"task_id": task_id, "agent": self.agent_name})
+                permanent = isinstance(exc, PermanentLLMError)
                 result = TaskResult(
                     task_id=task_id,
                     agent=self.agent_name,
                     success=False,
                     error=f"{type(exc).__name__}: {exc}"[:1000],
+                    retryable=not permanent,
                 )
+                # A permanent failure stops this worker outright. Continuing would
+                # claim the next task only to fail it the same way.
+                if permanent:
+                    log.error(
+                        "worker.permanent_failure",
+                        extra={"agent": self.agent_name, "error": str(exc)[:200]},
+                    )
+                    self.request_stop()
                 self._recent_errors += 1
             finally:
                 await release_toolset(tools)

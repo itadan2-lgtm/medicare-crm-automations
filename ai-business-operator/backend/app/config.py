@@ -45,7 +45,9 @@ class Settings(BaseSettings):
 
     # --- LLM ---
     anthropic_api_key: str = ""
-    anthropic_model: str = "claude-sonnet-4-5"
+    # Verified against /v1/models. Sonnet is the right default for agent work:
+    # opus-5 is available if planning quality turns out to need it.
+    anthropic_model: str = "claude-sonnet-5"
     openai_api_key: str = ""
     embedding_model: str = "text-embedding-3-small"
     embedding_dimensions: int = 1536

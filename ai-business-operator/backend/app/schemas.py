@@ -83,6 +83,14 @@ class TaskResult(BaseModel):
     output: dict[str, Any] = Field(default_factory=dict)
     error: str | None = None
     emits: EventType | None = None
+    retryable: bool = Field(
+        default=True,
+        description=(
+            "False for failures a retry cannot fix — an expired key, exhausted "
+            "credits, revoked permission. These block immediately rather than "
+            "spending every task's retry budget on a condition only a human clears."
+        ),
+    )
 
 
 # --- Events ----------------------------------------------------------------

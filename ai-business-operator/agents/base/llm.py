@@ -22,11 +22,41 @@ class LLMError(RuntimeError):
     pass
 
 
+class PermanentLLMError(LLMError):
+    """A failure retrying cannot fix: bad key, no credits, revoked permission.
+
+    Retrying these burns the retry budget of every task in the project against a
+    condition only a human can clear, so the orchestrator blocks immediately
+    instead.
+    """
+
+
 class OutputParseError(LLMError):
     """The model returned something that doesn't match the expected schema.
 
     Recoverable: the agent retries once with the validation error attached.
     """
+
+
+#: Substrings identifying a permanent failure in a provider error message.
+#: Matched on text because providers signal these with a mix of 400/401/403 and
+#: only the message reliably distinguishes "no credits" from a transient 400.
+_PERMANENT_SIGNALS = (
+    "credit balance is too low",
+    "invalid x-api-key",
+    "authentication_error",
+    "permission_error",
+    "billing",
+    "quota",
+)
+
+
+def classify_error(exc: Exception) -> Exception:
+    """Re-raise provider errors as PermanentLLMError when retrying is pointless."""
+    message = str(exc).lower()
+    if any(signal in message for signal in _PERMANENT_SIGNALS):
+        return PermanentLLMError(str(exc))
+    return exc
 
 
 class LLM(Protocol):
@@ -54,12 +84,15 @@ class ClaudeLLM:
 
     async def complete(self, *, system: str, prompt: str, max_tokens: int = 4096) -> str:
         client = self._ensure_client()
-        response = await client.messages.create(
-            model=self.model,
-            max_tokens=max_tokens,
-            system=system,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        try:
+            response = await client.messages.create(
+                model=self.model,
+                max_tokens=max_tokens,
+                system=system,
+                messages=[{"role": "user", "content": prompt}],
+            )
+        except Exception as exc:
+            raise classify_error(exc) from exc
         return "".join(block.text for block in response.content if block.type == "text")
 
 

@@ -380,3 +380,29 @@ async def test_gate_disabled_lets_publishing_through(session: AsyncSession, proj
     claimed = await orch.claim_next_task("browser_agent", "worker-1")
     assert claimed is not None
     assert claimed.task_type == "publish_funnel"
+
+
+async def test_permanent_failure_blocks_without_retrying(
+    session: AsyncSession, project: int
+) -> None:
+    """An exhausted key or empty balance is not fixed by trying again. Blocking on
+    the first failure keeps the other tasks from each burning their attempts
+    against the same wall."""
+    orch = orchestrator(session, max_task_attempts=3)
+    await orch.plan_project(project, "fitness")
+
+    task = await orch.claim_next_task("research_agent", "worker-1")
+    assert task is not None
+
+    result = await orch.complete_task(
+        TaskResult(
+            task_id=task.task_id,
+            agent="research_agent",
+            success=False,
+            error="PermanentLLMError: credit balance is too low",
+            retryable=False,
+        )
+    )
+
+    assert result.status == TaskStatus.BLOCKED.value
+    assert result.attempts == 1  # blocked on the first try, not the fourth

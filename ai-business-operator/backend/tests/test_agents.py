@@ -251,3 +251,39 @@ def test_optimization_prompt_states_the_sample_floor() -> None:
     prompt = agent.build_prompt({"collect_analytics": {"metrics": {"visitors": 12}}})
     assert "12 visitors" in prompt
     assert "MIN_SAMPLE_SIZE" in prompt
+
+
+# --- Permanent vs transient failures ---------------------------------------
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        # The exact message the live API returned on an exhausted account.
+        "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', "
+        "'message': 'Your credit balance is too low to access the Anthropic API.'}}",
+        "Error code: 401 - {'error': {'type': 'authentication_error', "
+        "'message': 'invalid x-api-key'}}",
+        "Error code: 403 - {'error': {'type': 'permission_error'}}",
+        "You have exceeded your quota",
+    ],
+)
+def test_permanent_failures_are_classified(message: str) -> None:
+    from agents.base.llm import PermanentLLMError, classify_error
+
+    assert isinstance(classify_error(RuntimeError(message)), PermanentLLMError)
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Error code: 529 - overloaded_error",
+        "Error code: 500 - internal server error",
+        "Connection reset by peer",
+        "Request timed out",
+    ],
+)
+def test_transient_failures_stay_retryable(message: str) -> None:
+    from agents.base.llm import PermanentLLMError, classify_error
+
+    assert not isinstance(classify_error(RuntimeError(message)), PermanentLLMError)
