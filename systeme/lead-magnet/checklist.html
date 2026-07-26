@@ -1,0 +1,118 @@
+<style>
+@font-face { font-family: 'Fraunces'; src: url('node_modules/@fontsource/fraunces/files/fraunces-latin-600-normal.woff2') format('woff2'); font-weight: 600; }
+@font-face { font-family: 'Fraunces'; src: url('node_modules/@fontsource/fraunces/files/fraunces-latin-400-normal.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'Karla'; src: url('node_modules/@fontsource/karla/files/karla-latin-400-normal.woff2') format('woff2'); font-weight: 400; }
+@font-face { font-family: 'Karla'; src: url('node_modules/@fontsource/karla/files/karla-latin-600-normal.woff2') format('woff2'); font-weight: 600; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@page { size: A4; margin: 0; }
+
+body {
+  width: 210mm; height: 297mm;
+  background: #FDFBF7;
+  color: #1B1714;
+  font-family: 'Karla', sans-serif;
+  padding: 13mm 14mm 10mm;
+  display: flex; flex-direction: column;
+}
+
+.masthead { border-bottom: 2px solid #1B1714; padding-bottom: 4mm; margin-bottom: 5mm; }
+h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 25pt; line-height: 1.05; letter-spacing: -0.01em; }
+.kicker { font-size: 7.5pt; letter-spacing: 0.16em; text-transform: uppercase; color: #A83E22; font-weight: 600; margin-bottom: 2.5mm; }
+.standfirst { font-size: 9.5pt; line-height: 1.45; margin-top: 3mm; max-width: 155mm; color: #443C36; }
+
+section { margin-bottom: 5mm; }
+h2 {
+  font-family: 'Fraunces', serif; font-weight: 600; font-size: 12pt;
+  display: flex; align-items: baseline; gap: 3mm; margin-bottom: 2.5mm;
+}
+h2 .num {
+  font-family: 'Karla', sans-serif; font-size: 7.5pt; font-weight: 600;
+  background: #A83E22; color: #fff; width: 6.5mm; height: 6.5mm; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+}
+h2 .hint { font-family: 'Karla', sans-serif; font-weight: 400; font-size: 8pt; color: #7A6E66; }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  font-size: 7pt; letter-spacing: 0.09em; text-transform: uppercase; color: #7A6E66;
+  text-align: left; font-weight: 600; padding: 0 2mm 1.5mm 0;
+}
+td { border-bottom: 1px solid #DDD2C6; height: 9.5mm; }
+td.tint { background: #F7F1EA; }
+
+.rule-lines div { border-bottom: 1px solid #DDD2C6; height: 9mm; }
+
+ul { list-style: none; }
+li { display: flex; align-items: flex-start; gap: 2.5mm; padding: 2.1mm 0; border-bottom: 1px solid #EDE4DA; font-size: 9.5pt; line-height: 1.35; }
+li:last-child { border-bottom: none; }
+.box { width: 3.6mm; height: 3.6mm; border: 1.4px solid #A83E22; border-radius: 1px; flex: none; margin-top: 1.1mm; }
+li em { font-style: normal; color: #7A6E66; }
+
+.key { background: #F0E7DC; border-left: 3px solid #A83E22; padding: 3mm 4mm; margin-top: 2mm; }
+.key p { font-size: 9.5pt; line-height: 1.4; }
+.key strong { font-family: 'Fraunces', serif; font-weight: 600; }
+
+.after { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; }
+.after .field { border-bottom: 1px solid #DDD2C6; padding-top: 6.5mm; }
+.after .field span { font-size: 7pt; letter-spacing: 0.09em; text-transform: uppercase; color: #7A6E66; font-weight: 600; }
+
+footer {
+  margin-top: auto; border-top: 1px solid #DDD2C6; padding-top: 3mm;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 8mm;
+}
+footer p { font-size: 7pt; line-height: 1.4; color: #7A6E66; max-width: 120mm; }
+footer .mark { font-family: 'Fraunces', serif; font-size: 8.5pt; color: #A83E22; white-space: nowrap; }
+</style>
+
+<div class="masthead">
+  <div class="kicker">Free · one page · take it with you</div>
+  <h1>The doctor visit prep checklist</h1>
+  <p class="standfirst">Fill this in a few days before your appointment, not the morning of — you'll remember more, and you won't be doing it in a waiting room. Take it in and keep it open in front of you.</p>
+</div>
+
+<section>
+  <h2><span class="num">1</span> What's been happening <span class="hint">dates travel further than descriptions</span></h2>
+  <table>
+    <tr><th style="width:34%">Symptom</th><th style="width:22%">Started</th><th style="width:22%">How often</th><th style="width:22%">Better / worse when</th></tr>
+    <tr><td class="tint"></td><td></td><td class="tint"></td><td></td></tr>
+    <tr><td class="tint"></td><td></td><td class="tint"></td><td></td></tr>
+    <tr><td class="tint"></td><td></td><td class="tint"></td><td></td></tr>
+    <tr><td class="tint"></td><td></td><td class="tint"></td><td></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">2</span> The three things I most need to say <span class="hint">if the appointment ends early, these are the ones</span></h2>
+  <div class="rule-lines"><div></div><div></div><div></div></div>
+</section>
+
+<section>
+  <h2><span class="num">3</span> Questions to ask</h2>
+  <ul>
+    <li><span class="box"></span><span>What do you think is causing this?</span></li>
+    <li><span class="box"></span><span>What would need to be true for it to be worth investigating further?</span></li>
+    <li><span class="box"></span><span>What should I watch for, and when should I come back?</span></li>
+    <li><span class="box"></span><span>Can the reasoning go in my notes?</span></li>
+    <li><span class="box"></span><span><em>My own question:</em></span></li>
+  </ul>
+  <div class="key">
+    <p><strong>If you're told it's stress —</strong> ask the follow-up: <em>“If it isn't perimenopause, what else would explain this pattern?”</em> It's a fair question, and it usually changes the direction of the appointment.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">4</span> Before you get back to the car <span class="hint">write it down while it's still exact</span></h2>
+  <div class="after">
+    <div class="field"><span>What was said</span></div>
+    <div class="field"><span>Anything ruled out, and why</span></div>
+    <div class="field"><span>What was agreed, and who does it</span></div>
+    <div class="field"><span>The question I didn't get to ask</span></div>
+  </div>
+</section>
+
+<footer>
+  <p>This checklist helps you prepare for an appointment. It isn't medical advice, it isn't a diagnosis, and it doesn't replace talking to a clinician who knows your history.</p>
+  <div class="mark">yourbrand.com</div>
+</footer>
