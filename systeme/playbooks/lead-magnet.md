@@ -18,9 +18,16 @@ Call `get_funnels` before creating anything and count what already exists.
 If there are already 3, stop and say so instead of creating a fourth. Tell
 the account owner how many funnel slots are left when you finish.
 
+The single automation rule is the tightest of those limits — people hit it
+within days. Never suggest spending it on something trivial like a tagging
+rule. A workflow accepts unlimited actions in any order, including waits, so
+the entire email sequence belongs inside the one workflow and the rule stays
+free for something that genuinely needs it later.
+
 ## Shape
 
-Two steps, in this order:
+In systeme.io this is **Funnels → Create → Build an audience**, which gives
+exactly the two pages below. Create them in this order:
 
 1. `squeeze` — the opt-in page
 2. `opt_in_thank_you_page` — the thank-you page
@@ -80,33 +87,39 @@ The same goes for testimonials — do not put invented quotes on these pages.
 
 You cannot build this. systeme.io's tools cover funnels, pages, contacts,
 tags and newsletters — there is no workflow or automation tool, so the
-sequence has to be created by hand in Automations → Workflows → Create,
-triggered on "Form subscribed" for this funnel's form.
+sequence has to be created by hand in **Automations → Workflows → Create**,
+triggered on this funnel's opt-in form being submitted.
+
+Everything goes inside that one workflow, waits included. Do not propose a
+second workflow or an automation rule.
 
 So write it out instead. After the pages are saved, output the full sequence
-as copy the account owner can paste in, in this shape:
+as copy the account owner can paste in:
 
 | Email | Timing | Job |
 |---|---|---|
 | 1 | immediately | Deliver the download. One genuinely useful tip on using it. Set expectations for what's coming. Give explicit permission to unsubscribe — it cuts spam complaints. |
 | 2 | wait 2 days | Pure value, no pitch at all. This is what earns the right to send email 4. |
 | 3 | wait 3 days | The insight that reframes their problem. Practical, two concrete things they can do. |
-| 4 | wait 3 days | The pitch. One product, one link, one mention. No urgency, no countdown. Close by saying it's fine if the free thing was all they needed. |
-| 5 | wait 6 days | Sequence close. Say you won't clutter their inbox, name what you're building next, and ask them to reply and tell you what they'd find useful. |
+| 4 | wait 4 days | The soft pitch. One product, one link, one mention. No urgency, no countdown. Close by saying it's fine if the free thing was all they needed. |
 
-Five emails, fourteen days, one workflow — inside the free tier.
+Four emails, nine days, one workflow — inside the free tier.
 
-"Just reply and tell me" in email 5 is the most valuable line in the
-sequence: replies are free product research, and mailbox providers treat
-them as a strong positive signal.
+Optional fifth email, six days after the pitch, if the account owner wants
+it: a sequence close that says you won't clutter their inbox, names what
+you're building next, and asks them to reply and say what they'd find
+useful. "Just reply and tell me" is worth more than it looks — replies are
+free product research, and mailbox providers treat them as a strong positive
+signal. Offer it; don't add it unasked.
 
 Give each email a subject line and full body, with `[first name]` and
 `[download link]` as placeholders.
 
 ## Things to tell the account owner when you finish
 
-- Upload the download file in systeme.io (Contacts → Files) and paste its
-  URL into email 1 — you have no way to upload it.
+- Upload the download file in systeme.io (Contacts → Files — file storage is
+  included on the free plan) and paste its URL into email 1. You have no way
+  to upload it yourself.
 - The optional segmentation dropdown ("where are you in this?") **cannot be
   built through the page tools** — the form only supports email, first name,
   last name and phone. Add it in the page editor by hand, or capture it

@@ -103,7 +103,7 @@ npm run store -- --playbook=lead-magnet --save=emails.md \
 Shipped with one: **`lead-magnet`**, which encodes the free-plan lead magnet
 build — a bare one-section opt-in page, a thank-you page that does the
 inbox-check and one soft sell, no countdowns or invented statistics, a check
-of your remaining free-plan funnel slots, and the five-email sequence
+of your remaining free-plan funnel slots, and the four-email sequence
 written out for you to paste in.
 
 Add your own by dropping a `.md` file into `systeme/playbooks/` — no code
@@ -117,10 +117,16 @@ The one thing a playbook can't override is systeme.io's own page limits
 
 systeme.io's tools cover funnels, pages, contacts, tags and newsletters.
 **There is no workflow or automation tool**, so nothing here can build the
-nurture sequence. The `lead-magnet` playbook writes all five emails out
+nurture sequence. The `lead-magnet` playbook writes all four emails out
 instead — subject lines, bodies, and the wait between each — for you to
-paste into Automations → Workflows → Create, triggered on *Form subscribed*.
-Use `--save=emails.md` so you're not scraping them out of a terminal.
+paste into Automations → Workflows → Create, triggered on the opt-in form
+being submitted. Use `--save=emails.md` so you're not scraping them out of
+a terminal.
+
+The whole sequence goes in that **one** workflow, waits included. The free
+plan gives you one workflow and one automation rule, and a workflow takes
+unlimited actions in any order — so the rule stays free for something that
+actually needs it later, rather than being spent on a tagging step.
 
 Two other things it can't do, and will tell you about: uploading your
 download file (do that in Contacts → Files, then paste the URL into email 1),

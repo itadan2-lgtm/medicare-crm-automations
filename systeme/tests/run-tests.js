@@ -195,6 +195,24 @@ test("it says outright that the email sequence can't be built", () => {
   assert.ok(/there is no workflow or automation tool/.test(text));
 });
 
+test("the one automation rule is protected", () => {
+  const { text } = playbooks.load("lead-magnet");
+  assert.ok(/Never suggest spending it on/.test(text), "should refuse to spend the single rule");
+  assert.ok(
+    /Do not propose a\nsecond workflow or an automation rule/.test(text),
+    "everything belongs in the one workflow"
+  );
+});
+
+test("the sequence is the four-email shape with 2/3/4-day waits", () => {
+  const { text } = playbooks.load("lead-magnet");
+  assert.ok(/Four emails, nine days, one workflow/.test(text));
+  for (const wait of ["wait 2 days", "wait 3 days", "wait 4 days"]) {
+    assert.ok(text.includes(wait), `missing "${wait}"`);
+  }
+  assert.ok(/Offer it; don't add it unasked/.test(text), "the 5th email stays optional");
+});
+
 console.log("\nprompt.js, withPlaybook()");
 test("no playbook leaves the brief alone", () => {
   assert.strictEqual(withPlaybook(null), SYSTEM_PROMPT);

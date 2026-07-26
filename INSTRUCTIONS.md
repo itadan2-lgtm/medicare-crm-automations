@@ -164,7 +164,7 @@ npm run store -- --playbook=lead-magnet --save=emails.md \
 
 A *playbook* is a file of your own house rules that overrides the generic
 advice — the one included builds a free-plan lead magnet funnel: a bare
-opt-in page, a thank-you page that does one soft sell, and the five-email
+opt-in page, a thank-you page that does one soft sell, and the four-email
 nurture sequence written out for you to paste in by hand (systeme.io has no
 workflow API). It needs two keys of its own — an Anthropic API key (pay-as-you-go, not a
 Claude subscription) and a systeme.io MCP key. Setup, costs, and the safety
