@@ -54,8 +54,13 @@
               "blocks": [
                 {
                   "type": "Headline",
-                  "text": "Dates travel further than descriptions",
+                  "text": "1. Dates travel further than descriptions",
                   "level": "h2"
+                },
+                {
+                  "type": "Text",
+                  "textAlign": "left",
+                  "html": "<p>Most people arrive with symptoms. Far fewer arrive with dates. <strong>I've been tired for a while</strong> and <strong>I've woken at 3am roughly four nights a week since October</strong> are the same information, and they produce completely different conversations.</p>"
                 }
               ]
             }
@@ -64,22 +69,15 @@
         {
           "columns": [
             {
-              "size": 6,
+              "size": 12,
               "blocks": [
                 {
-                  "type": "Text",
-                  "textAlign": "left",
-                  "html": "<p>Most people arrive with symptoms. Far fewer arrive with dates. <strong>I've been tired for a while</strong> and <strong>I've woken at 3am roughly four nights a week since October</strong> are the same information, and they produce completely different conversations.</p>"
-                }
-              ]
-            },
-            {
-              "size": 6,
-              "blocks": [
-                {
-                  "type": "Text",
-                  "textAlign": "left",
-                  "html": "<p>You don't need six months of data before it's worth bringing. Three weeks of dated notes already stops being a description and starts being a record.</p>"
+                  "type": "BulletList",
+                  "items": [
+                    "Three weeks of dated notes is already enough to be worth bringing",
+                    "Numbers land where adverbs don't — four nights a week, not often",
+                    "A record is harder to wave off than a description"
+                  ]
                 }
               ]
             }
@@ -94,13 +92,27 @@
         {
           "columns": [
             {
-              "size": 6,
+              "size": 12,
               "blocks": [
                 {
                   "type": "Headline",
-                  "text": "What to take with you",
+                  "text": "2. What to take with you",
                   "level": "h2"
                 },
+                {
+                  "type": "Text",
+                  "textAlign": "left",
+                  "html": "<p>You don't need all of this. Anything from the list beats arriving with none of it.</p>"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
                 {
                   "type": "BulletList",
                   "items": [
@@ -113,15 +125,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "size": 6,
-              "blocks": [
-                {
-                  "type": "Image",
-                  "imageDescription": "handbag notebook appointment card"
-                }
-              ]
             }
           ]
         }
@@ -134,27 +137,27 @@
         {
           "columns": [
             {
-              "size": 5,
-              "blocks": [
-                {
-                  "type": "Image",
-                  "imageDescription": "waiting room chairs soft daylight"
-                }
-              ]
-            },
-            {
-              "size": 7,
+              "size": 12,
               "blocks": [
                 {
                   "type": "Headline",
-                  "text": "If you're told it's stress",
+                  "text": "3. If you're told it's stress",
                   "level": "h2"
                 },
                 {
                   "type": "Text",
                   "textAlign": "left",
                   "html": "<p>It might be. It might also be the first answer rather than the final one. Either way, the useful move is a question rather than a disagreement.</p>"
-                },
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "size": 12,
+              "blocks": [
                 {
                   "type": "BulletList",
                   "items": [
@@ -182,7 +185,7 @@
               "blocks": [
                 {
                   "type": "Headline",
-                  "text": "Write it down before you get to the car",
+                  "text": "4. Write it down before you get to the car",
                   "level": "h2"
                 },
                 {
