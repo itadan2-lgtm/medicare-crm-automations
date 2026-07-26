@@ -12,10 +12,14 @@
     "enrollment-deadlines": "node automations/enrollment-deadlines.js",
     "chargeback-check": "node automations/chargeback-tracker.js",
     "t65-tag": "node automations/t65-tagger.js",
-    "test": "node automations/tests/run-tests.js && node automations/tests/integration-mock.js"
+    "store": "node systeme/store.js",
+    "store:check": "node systeme/check.js",
+    "store:test": "node systeme/tests/run-tests.js",
+    "test": "node automations/tests/run-tests.js && node automations/tests/integration-mock.js && node systeme/tests/run-tests.js"
   },
   "license": "UNLICENSED",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@notionhq/client": "^5.23.2",
     "@sendgrid/mail": "^8.1.6",
     "dotenv": "^17.2.3",

@@ -26,6 +26,7 @@ You will not need to open most of this. Here's the map:
 | `automations/internal/` | Shared code the scripts lean on | No |
 | `automations/tests/` | Proof the logic works (30 checks) | No, but `npm test` is reassuring |
 | `api/` | The 1 script that runs differently (see why below) | Only when deploying it |
+| `systeme/` | Optional extra: builds systeme.io funnels with Claude | Only if you want it |
 | `.github/` | Tells GitHub to run things daily | No |
 
 ## What runs where
@@ -149,6 +150,22 @@ npm run doctor     # plain-English health check of the whole setup
 npm test           # offline logic tests, should say 24 passed + 6 passed
 npm run soa-check  # a real check against your actual Notion data
 ```
+
+## Optional: building systeme.io stores with Claude
+
+Separate from everything above, and not needed by any of it. If you sell
+through systeme.io, `npm run store` lets you describe a funnel in plain
+English and have Claude design and build it in your account:
+
+```bash
+npm run store -- "Build a lead magnet funnel for a free Medicare
+                  enrollment checklist for people turning 65"
+```
+
+It needs two keys of its own — an Anthropic API key (pay-as-you-go, not a
+Claude subscription) and a systeme.io MCP key. Setup, costs, and the safety
+switches are in `systeme/README.md`. Start with `npm run store:check`, which
+is read-only and proves the connection works before you build anything.
 
 ## Updating the rules
 
